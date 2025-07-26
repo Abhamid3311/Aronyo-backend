@@ -17,7 +17,7 @@ router.put(
 );
 
 // Admin-only routes
-router.get("/", authMiddleware(["admin"]), userController.getAllUsers);
+router.get("/admin/all-users", authMiddleware(["admin"]), userController.getAllUsers);
 router.patch("/:id", authMiddleware(["admin"]), userController.updateUser);
 router.delete("/:id", authMiddleware(["admin"]), userController.deleteUser);
 

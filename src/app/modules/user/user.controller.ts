@@ -19,8 +19,6 @@ export const userController = {
       const userId = req.user?.userId;
       const updateData = req.body;
 
-      // console.log(userId, updateData);
-
       if (!updateData) {
         res
           .status(400)
@@ -34,6 +32,7 @@ export const userController = {
     }
   },
 
+  
   async getAllUsers(req: Request, res: Response) {
     try {
       const users = await userService.getAllUsers();
