@@ -1,4 +1,3 @@
-// src/modules/auth/auth.service.ts
 import bcrypt from "bcrypt";
 import { User } from "../user/user.model";
 import { IAuthResponse } from "./auth.interface";
@@ -40,7 +39,6 @@ export const authService = {
       user._id.toString(),
       user.role
     );
-
     return { accessToken, refreshToken, user };
   },
 
