@@ -42,7 +42,9 @@ export const authService = {
     return { accessToken, refreshToken, user };
   },
 
-  async refreshToken(refreshToken: string): Promise<{ accessToken: string }> {
+  async refreshToken(
+    refreshToken: string
+  ): Promise<{ accessToken: string; user: IUser }> {
     const decoded = tokenUtils.verifyRefreshToken(refreshToken);
     const user = await User.findById(decoded.userId);
     if (!user || user.isDeleted) {
@@ -54,6 +56,6 @@ export const authService = {
       user.role
     );
 
-    return { accessToken };
+    return { accessToken, user };
   },
 };

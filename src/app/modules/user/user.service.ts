@@ -6,6 +6,7 @@ import { IUser } from "./user.interface";
 export const userService = {
   async getProfile(userId: string): Promise<IUser> {
     const user = await User.findById(userId).select("-password");
+
     if (!user || user.isDeleted) {
       throw new Error("User not found");
     }
@@ -16,13 +17,16 @@ export const userService = {
     userId: string,
     updateData: Partial<IUser>
   ): Promise<IUser> {
+
     if (updateData.password) {
       updateData.password = await bcrypt.hash(updateData.password, 10);
     }
+
     const user = await User.findByIdAndUpdate(userId, updateData, {
       new: true,
       runValidators: true,
     }).select("-password");
+    
     if (!user || user.isDeleted) {
       throw new Error("User not found");
     }

@@ -14,10 +14,19 @@ export const userController = {
     }
   },
 
-  async updateProfile(req: Request, res: Response) {
+  async updateProfile(req: Request, res: Response): Promise<void> {
     try {
       const userId = req.user?.userId;
       const updateData = req.body;
+
+      // console.log(userId, updateData);
+
+      if (!updateData) {
+        res
+          .status(400)
+          .json({ success: false, message: "No update data provided" });
+      }
+
       const user = await userService.updateProfile(userId!, updateData);
       res.status(200).json({ success: true, data: user });
     } catch (error) {

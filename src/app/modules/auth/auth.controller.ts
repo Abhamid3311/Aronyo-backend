@@ -38,7 +38,7 @@ export const authController = {
   async logout(req: Request, res: Response) {
     try {
       res.clearCookie("refreshToken");
-      
+
       res
         .status(200)
         .json({ success: true, message: "Logged out successfully" });
@@ -50,11 +50,17 @@ export const authController = {
   async refreshToken(req: Request, res: Response) {
     try {
       const refreshToken = req.cookies.refreshToken;
+      if (!refreshToken) {
+        return res.status(401).json({
+          success: false,
+          message: "Refresh token not found",
+        });
+      }
       const result = await authService.refreshToken(refreshToken);
 
       res.status(200).json({
         success: true,
-        data: { accessToken: result.accessToken },
+        data: { accessToken: result.accessToken, user: result.user },
       });
     } catch (error) {
       sendErrorResponse(error, res);
