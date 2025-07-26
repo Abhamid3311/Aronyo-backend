@@ -2,6 +2,7 @@ import express, { Application, Request, Response } from "express";
 import cors from "cors";
 import { studentRoutes } from "./app/modules/student/student.route";
 import cookieParser from "cookie-parser";
+import { authRoutes } from "./app/modules/auth/auth.route";
 
 const app: Application = express();
 
@@ -13,6 +14,7 @@ app.use(cookieParser());
 
 //Application routes
 app.use("/api/v1/students", studentRoutes);
+app.use("/api/v1/auth", authRoutes);
 
 app.get("/", (req: Request, res: Response) => {
   res.send("Hello World from Aronyo Backend!");
