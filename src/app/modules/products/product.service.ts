@@ -15,8 +15,7 @@ export class ProductService {
     sort: string
   ) {
     return await Product.find(filter)
-      // .populate("category")
-      // .populate("subCategory")
+      .populate("category")
       .populate("createdBy")
       .skip(skip)
       .limit(limit)
@@ -29,8 +28,7 @@ export class ProductService {
 
   async getProductById(id: string) {
     return await Product.findById(id)
-      // .populate("category")
-      // .populate("subCategory")
+      .populate("category")
       .populate("createdBy");
   }
 
