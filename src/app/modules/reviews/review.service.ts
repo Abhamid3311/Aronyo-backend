@@ -2,6 +2,7 @@ import { IReview } from "./review.interface";
 import { Review } from "./review.model";
 
 class ReviewService {
+
   async createOrUpdateReview(
     userId: string,
     productId: string,
@@ -10,6 +11,7 @@ class ReviewService {
   ): Promise<IReview> {
     // Try to find existing review
     const existingReview = await Review.findOne({ userId, productId });
+    
     if (existingReview) {
       existingReview.rating = rating;
       existingReview.comment = comment;

@@ -6,8 +6,8 @@ const router = Router();
 
 // Create or update review - only logged-in users
 router.post(
-  "/create-review",
-  authMiddleware(["user"]),
+  "/add-review",
+  authMiddleware(["user", "admin"]),
   reviewController.createReview
 );
 
