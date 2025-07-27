@@ -33,6 +33,7 @@ const productSchema = new Schema<IProduct>(
       min: [0, "Discount price must be a positive number"],
       validate: {
         validator: function (this: IProduct, value: number) {
+          if (this.price == null) return true;
           return value < this.price;
         },
         message: "Discount price must be less than the original price",

@@ -18,3 +18,15 @@ export interface IProduct {
   createdBy: Types.ObjectId;
   createdAt?: Date;
 }
+
+export interface IQueryParams {
+  page?: string;
+  limit?: string;
+  sort?: string;
+  search?: string;
+  category?: string;
+  brand?: string;
+  minPrice?: string;
+  maxPrice?: string;
+}
+
