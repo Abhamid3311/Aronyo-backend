@@ -1,22 +1,22 @@
 import jwt from "jsonwebtoken";
+import config from "../app/config";
 
 export const tokenUtils = {
   generateTokens(
     userId: string,
     role: string
   ): { accessToken: string; refreshToken: string } {
-    
     // Access token
     const accessToken = jwt.sign(
       { userId, role },
-      process.env.JWT_ACCESS_SECRET as string,
+      config.JWT_REFRESH_SECRET as string,
       { expiresIn: "1h" }
     );
 
     // Refresh token
     const refreshToken = jwt.sign(
       { userId, role },
-      process.env.JWT_REFRESH_SECRET as string,
+      config.JWT_REFRESH_SECRET as string,
       { expiresIn: "7d" }
     );
 
@@ -32,10 +32,7 @@ export const tokenUtils = {
   // Verify JWT Token
   verifyRefreshToken(refreshToken: string): { userId: string; role: string } {
     try {
-      return jwt.verify(
-        refreshToken,
-        process.env.JWT_REFRESH_SECRET as string
-      ) as {
+      return jwt.verify(refreshToken, config.JWT_REFRESH_SECRET as string) as {
         userId: string;
         role: string;
       };
