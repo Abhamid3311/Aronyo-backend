@@ -12,7 +12,6 @@ const categorySchema = new Schema<ICategory>(
     },
     slug: {
       type: String,
-      required: [true, "Slug is required"],
       unique: true,
       lowercase: true,
       trim: true,
@@ -45,5 +44,10 @@ categorySchema.pre("save", function (next) {
   }
   next();
 });
+
+// 🔄 Add indexes for performance
+categorySchema.index({ name: 1 }, { unique: true });
+categorySchema.index({ slug: 1 }, { unique: true });
+categorySchema.index({ createdBy: 1 });
 
 export const Category = model<ICategory>("Category", categorySchema);

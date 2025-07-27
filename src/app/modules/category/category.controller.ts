@@ -1,0 +1,78 @@
+import { Request, Response } from "express";
+import { CategoryService } from "./category.service";
+import { sendErrorResponse } from "../../../utils/sendErrorResponse";
+
+export const categoryController = {
+  async createCategory(req: Request, res: Response): Promise<void> {
+    try {
+      const userId = req.user?.userId;
+      const categoryData = { ...req.body, createdBy: userId };
+
+      const category = await CategoryService.createCategory(categoryData);
+      res.status(201).json({
+        success: true,
+        message: "Category created successfully",
+        data: category,
+      });
+    } catch (error) {
+      sendErrorResponse(error, res);
+    }
+  },
+
+  async getAllCategories(req: Request, res: Response): Promise<void> {
+    try {
+      const categories = await CategoryService.getAllCategories();
+      res.status(200).json({
+        success: true,
+        data: categories,
+      });
+    } catch (error) {
+      sendErrorResponse(error, res);
+    }
+  },
+
+  async getSingleCategory(req: Request, res: Response): Promise<void> {
+    try {
+      const slug = req.params.slug;
+      const category = await CategoryService.getSingleCategory(slug);
+      res.status(200).json({
+        success: true,
+        data: category,
+      });
+    } catch (error) {
+      sendErrorResponse(error, res);
+    }
+  },
+
+  async updateCategory(req: Request, res: Response): Promise<void> {
+    try {
+      const slug = req.params.slug;
+      const updateData = req.body;
+
+      const updatedCategory = await CategoryService.updateCategory(
+        slug,
+        updateData
+      );
+      res.status(200).json({
+        success: true,
+        message: "Category updated successfully",
+        data: updatedCategory,
+      });
+    } catch (error) {
+      sendErrorResponse(error, res);
+    }
+  },
+
+  async deleteCategory(req: Request, res: Response): Promise<void> {
+    try {
+      const slug = req.params.slug;
+      await CategoryService.deleteCategory(slug);
+      res.status(200).json({
+        success: true,
+        message: "Category deleted successfully",
+      });
+    } catch (error) {
+      sendErrorResponse(error, res);
+    }
+  },
+};
