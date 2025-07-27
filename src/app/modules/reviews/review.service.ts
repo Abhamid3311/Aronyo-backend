@@ -25,6 +25,12 @@ class ReviewService {
     return Review.find({ productId }).populate("userId", "name email"); // populate user name/email for showing
   }
 
+  async getAllReviews() {
+    return Review.find()
+      .populate("userId", "name email")
+      .populate("productId", "title slug");
+  }
+
   async updateReview(reviewId: string, updateData: Partial<IReview>) {
     return Review.findByIdAndUpdate(reviewId, updateData, {
       new: true,

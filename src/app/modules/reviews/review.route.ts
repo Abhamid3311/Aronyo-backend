@@ -13,7 +13,7 @@ router.post(
 
 // Get all reviews for a product
 router.get("/product/:productId", reviewController.getProductReviews);
-
+router.get("/", authMiddleware(["admin"]), reviewController.getAllReviews);
 router.put("/:id", authMiddleware(["user"]), reviewController.updateReview);
 router.delete(
   "/:id",

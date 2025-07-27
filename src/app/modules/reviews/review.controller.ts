@@ -34,6 +34,15 @@ export const reviewController = {
     }
   },
 
+  async getAllReviews(req: Request, res: Response) {
+    try {
+      const reviews = await reviewService.getAllReviews();
+      res.status(200).json({ success: true, data: reviews });
+    } catch (error) {
+      sendErrorResponse(error, res);
+    }
+  },
+
   async updateReview(req: Request, res: Response): Promise<void> {
     try {
       const reviewId = req.params.id;
