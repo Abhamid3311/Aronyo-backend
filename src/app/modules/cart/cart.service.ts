@@ -1,64 +1,42 @@
 import { Cart } from "./cart.model";
-import { Types } from "mongoose";
 import { ICart } from "./cart.interface";
 
 export const CartService = {
-  async getCart(userId: string): Promise<ICart | null> {
-    return await Cart.findOne({ userId }).populate("items.productId");
-  },
-
   async addToCart(userId: string, productId: string): Promise<ICart> {
-    const cart = await Cart.findOne({ userId });
+    const existingCartItem = await Cart.findOne({ userId, productId });
 
-    if (cart) {
-      const item = cart.items.find((i) => i.productId.toString() === productId);
-      if (item) {
-        item.quantity += 1;
-      } else {
-        cart.items.push({
-          productId: new Types.ObjectId(productId),
-          quantity: 1,
-        });
-      }
-      return await cart.save();
+    if (existingCartItem) {
+      existingCartItem.quantity += 1;
+      return await existingCartItem.save();
     } else {
       return await Cart.create({
         userId,
-        items: [{ productId: new Types.ObjectId(productId), quantity: 1 }],
+        productId,
+        quantity: 1,
       });
     }
   },
 
-  async increaseQuantity(
-    userId: string,
-    productId: string
-  ): Promise<ICart | null> {
-    return await Cart.findOneAndUpdate(
-      { userId, "items.productId": productId },
-      { $inc: { "items.$.quantity": 1 } },
-      { new: true }
-    ).populate("items.productId");
+  async getCart(userId: string): Promise<ICart | null> {
+    return await Cart.findOne({ userId }).populate("productId");
   },
 
   async decreaseQuantity(
     userId: string,
     productId: string
   ): Promise<ICart | null> {
-    const cart = await Cart.findOne({ userId });
-    if (!cart) return null;
+    const cartItem = await Cart.findOne({ userId, productId });
 
-    const item = cart.items.find((i) => i.productId.toString() === productId);
-    if (!item) return null;
+    if (!cartItem) return null;
 
-    if (item.quantity > 1) {
-      item.quantity -= 1;
+    if (cartItem.quantity > 1) {
+      cartItem.quantity -= 1;
+      return await cartItem.save();
     } else {
-      cart.items = cart.items.filter(
-        (i) => i.productId.toString() !== productId
-      );
+      // Quantity is 1, so remove the cart item
+      await Cart.findOneAndDelete({ userId, productId });
+      return null;
     }
-
-    return await cart.save();
   },
 
   async removeItem(userId: string, productId: string): Promise<ICart | null> {
@@ -66,7 +44,7 @@ export const CartService = {
       { userId },
       { $pull: { items: { productId } } },
       { new: true }
-    ).populate("items.productId");
+    ).populate("productId");
   },
 
   async clearCart(userId: string): Promise<ICart | null> {

@@ -7,6 +7,7 @@ import { productRoutes } from "./app/modules/products/product.route";
 import { CategoryRoutes } from "./app/modules/category/category.route";
 import { cartRoutes } from "./app/modules/cart/cart.route";
 import { reviewRoutes } from "./app/modules/reviews/review.route";
+import { orderRoutes } from "./app/modules/orders/order.route";
 
 const app: Application = express();
 
@@ -23,6 +24,7 @@ app.use("/api/v1/products", productRoutes);
 app.use("/api/v1/category", CategoryRoutes);
 app.use("/api/v1/cart", cartRoutes);
 app.use("/api/v1/review", reviewRoutes);
+app.use("/api/v1/orders", orderRoutes);
 
 app.get("/", (req: Request, res: Response) => {
   res.send("Hello World from Aronyo Backend!");

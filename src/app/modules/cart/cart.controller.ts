@@ -3,36 +3,18 @@ import { CartService } from "./cart.service";
 import { sendErrorResponse } from "../../../utils/sendErrorResponse";
 
 export const cartController = {
-  async getCart(req: Request, res: Response): Promise<void> {
-    try {
-      const userId = req.user?.userId;
-      if (!userId) {
-        throw new Error("User not authenticated");
-      }
-      const cart = await CartService.getCart(userId);
-      if (!cart) {
-        throw new Error("Cart not found");
-      }
-      res.status(200).json({
-        success: true,
-        data: cart,
-        message: "Cart retrieved successfully",
-      });
-    } catch (error) {
-      sendErrorResponse(error, res);
-    }
-  },
-
   async addToCart(req: Request, res: Response): Promise<void> {
     try {
       const userId = req.user?.userId;
       const { productId } = req.body;
+
       if (!userId) {
         throw new Error("User not authenticated");
       }
       if (!productId) {
         throw new Error("Product ID is required");
       }
+
       const cart = await CartService.addToCart(userId, productId);
       res.status(200).json({
         success: true,
@@ -44,24 +26,21 @@ export const cartController = {
     }
   },
 
-  async increaseQuantity(req: Request, res: Response): Promise<void> {
+  async getCart(req: Request, res: Response): Promise<void> {
     try {
       const userId = req.user?.userId;
-      const { productId } = req.body;
       if (!userId) {
         throw new Error("User not authenticated");
       }
-      if (!productId) {
-        throw new Error("Product ID is required");
-      }
-      const cart = await CartService.increaseQuantity(userId, productId);
+      const cart = await CartService.getCart(userId);
+
       if (!cart) {
-        throw new Error("Cart or product not found");
+        throw new Error("Cart not found");
       }
       res.status(200).json({
         success: true,
         data: cart,
-        message: "Quantity increased successfully",
+        message: "Cart retrieved successfully",
       });
     } catch (error) {
       sendErrorResponse(error, res);

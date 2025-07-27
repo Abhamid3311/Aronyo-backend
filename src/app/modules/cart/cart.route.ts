@@ -4,26 +4,23 @@ import { authMiddleware } from "../../middlewares/auth.middleware";
 
 const router = Router();
 
-router.get(
-  "/",
-  authMiddleware(["user", "admin", "staff"]),
-  cartController.getCart
-);
 router.post(
   "/add",
   authMiddleware(["user", "admin", "staff"]),
   cartController.addToCart
 );
-router.patch(
-  "/increase",
+router.get(
+  "/",
   authMiddleware(["user", "admin", "staff"]),
-  cartController.increaseQuantity
+  cartController.getCart
 );
+
 router.patch(
   "/decrease",
   authMiddleware(["user", "admin", "staff"]),
   cartController.decreaseQuantity
 );
+
 router.delete(
   "/remove",
   authMiddleware(["user", "admin", "staff"]),
