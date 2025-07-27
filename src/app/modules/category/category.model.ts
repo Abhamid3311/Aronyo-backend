@@ -45,9 +45,6 @@ categorySchema.pre("save", function (next) {
   next();
 });
 
-// 🔄 Add indexes for performance
-categorySchema.index({ name: 1 }, { unique: true });
-categorySchema.index({ slug: 1 }, { unique: true });
 categorySchema.index({ createdBy: 1 });
 
 export const Category = model<ICategory>("Category", categorySchema);
