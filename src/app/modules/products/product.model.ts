@@ -1,0 +1,103 @@
+import { Schema, model } from "mongoose";
+import { IProduct } from "./product.interface";
+
+const productSchema = new Schema<IProduct>(
+  {
+    title: {
+      type: String,
+      required: [true, "Product title is required"],
+      trim: true,
+      minlength: [3, "Product title must be at least 3 characters long"],
+    },
+    slug: {
+      type: String,
+      required: [true, "Product slug is required"],
+      unique: true,
+      lowercase: true,
+    },
+    description: {
+      type: String,
+      required: [true, "Product description is required"],
+      minlength: [
+        10,
+        "Product description must be at least 10 characters long",
+      ],
+    },
+    price: {
+      type: Number,
+      required: [true, "Product price is required"],
+      min: [0, "Price must be a positive number"],
+    },
+    discountPrice: {
+      type: Number,
+      min: [0, "Discount price must be a positive number"],
+      validate: {
+        validator: function (this: IProduct, value: number) {
+          return value < this.price;
+        },
+        message: "Discount price must be less than the original price",
+      },
+    },
+
+    category: {
+      type: Schema.Types.ObjectId,
+      ref: "Category",
+      required: [true, "Product category is required"],
+    },
+    subCategory: {
+      type: Schema.Types.ObjectId,
+      ref: "Category",
+    },
+
+    brand: {
+      type: String,
+      trim: true,
+    },
+    images: {
+      type: [String],
+      required: [true, "At least one product image is required"],
+      validate: {
+        validator: (v: string[]) => v.length > 0,
+        message: "At least one image must be provided",
+      },
+    },
+    stock: {
+      type: Number,
+      required: [true, "Product stock is required"],
+      min: [0, "Stock must be a non-negative number"],
+    },
+    tags: {
+      type: [String],
+      default: [],
+    },
+
+    ratings: {
+      type: Number,
+      default: 0,
+      min: [0, "Ratings must be at least 0"],
+      max: [5, "Ratings cannot exceed 5"],
+    },
+    numReviews: {
+      type: Number,
+      default: 0,
+      min: [0, "Number of reviews must be 0 or more"],
+    },
+
+    size: {
+      type: String,
+      enum: {
+        values: ["S", "M", "L", "XL", "XXL", "Free", "One Size"],
+        message: "Invalid size option",
+      },
+    },
+
+    createdBy: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      required: [true, "Creator reference is required"],
+    },
+  },
+  { timestamps: true }
+);
+
+export const Product = model<IProduct>("Product", productSchema);
