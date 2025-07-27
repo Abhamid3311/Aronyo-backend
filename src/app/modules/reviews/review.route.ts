@@ -5,7 +5,7 @@ import { authMiddleware } from "../../middlewares/auth.middleware";
 const router = Router();
 
 // Create or update review - only logged-in users
-router.post("/", authMiddleware(["user"]), reviewController.createReview);
+router.post("/create-review", authMiddleware(["user"]), reviewController.createReview);
 
 // Get all reviews for a product
 router.get("/product/:productId", reviewController.getProductReviews);
@@ -16,4 +16,5 @@ router.put("/:id", authMiddleware(["user"]), reviewController.updateReview);
 // Delete review by id - user must be authenticated
 router.delete("/:id", authMiddleware(["user","admin"]), reviewController.deleteReview);
 
-export default router;
+export const reviewRoutes = router;;
+
