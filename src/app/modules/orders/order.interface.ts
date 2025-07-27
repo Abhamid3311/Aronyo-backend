@@ -9,8 +9,8 @@ export interface IOrderItem {
 export interface IShippingAddress {
   name: string;
   phone: string;
-  city: string;
-  area: string;
+  city?: string;
+  area?: string;
   address: string;
 }
 

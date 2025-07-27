@@ -6,13 +6,13 @@ const router = Router();
 
 // All routes require authentication
 router.post(
-  "/",
+  "/create-order",
   authMiddleware(["user", "admin", "staff"]),
   orderController.createOrder
 );
 
 router.get(
-  "/",
+  "/my-orders",
   authMiddleware(["user", "admin", "staff"]),
   orderController.getAllOrders
 );

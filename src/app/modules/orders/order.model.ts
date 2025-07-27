@@ -34,12 +34,10 @@ const shippingAddressSchema = new Schema<IShippingAddress>({
   },
   city: {
     type: String,
-    required: [true, "City is required"],
     trim: true,
   },
   area: {
     type: String,
-    required: [true, "Area is required"],
     trim: true,
   },
   address: {
