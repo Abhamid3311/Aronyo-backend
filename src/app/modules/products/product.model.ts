@@ -41,13 +41,9 @@ const productSchema = new Schema<IProduct>(
     },
 
     category: {
-      type: Schema.Types.ObjectId,
+      type: String,
       ref: "Category",
       required: [true, "Product category is required"],
-    },
-    subCategory: {
-      type: Schema.Types.ObjectId,
-      ref: "Category",
     },
 
     brand: {

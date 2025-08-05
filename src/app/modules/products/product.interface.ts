@@ -6,8 +6,7 @@ export interface IProduct {
   description: string;
   price: number;
   discountPrice?: number;
-  category: Types.ObjectId;
-  subCategory?: Types.ObjectId;
+  category: string;
   brand?: string;
   images: string[];
   stock: number;
@@ -29,4 +28,3 @@ export interface IQueryParams {
   minPrice?: string;
   maxPrice?: string;
 }
-
