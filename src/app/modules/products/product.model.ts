@@ -82,10 +82,6 @@ const productSchema = new Schema<IProduct>(
 
     size: {
       type: String,
-      enum: {
-        values: ["S", "M", "L", "XL", "XXL", "Free", "One Size"],
-        message: "Invalid size option",
-      },
     },
 
     createdBy: {

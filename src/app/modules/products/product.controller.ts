@@ -6,9 +6,17 @@ import { FilterQuery } from "mongoose";
 import { sendErrorResponse } from "../../../utils/sendErrorResponse";
 
 class ProductController {
-  async createProduct(req: Request, res: Response) {
+  async createProduct(req: Request, res: Response): Promise<void> {
     try {
       const productData: IProduct = req.body;
+      const userPayload = (req as any).user;
+
+      if (!userPayload) {
+        res.status(401).json({ success: false, message: "Unauthorized" });
+      }
+
+      // Set createdBy from token's userId
+      productData.createdBy = userPayload.userId;
       const product = await productService.createProduct(productData);
 
       res.status(200).json({
@@ -135,7 +143,7 @@ class ProductController {
           success: false,
           message: "Product not found",
         });
-      };
+      }
 
       res.status(200).json({
         success: true,
