@@ -27,4 +27,5 @@ export interface IQueryParams {
   brand?: string;
   minPrice?: string;
   maxPrice?: string;
+  tag?: string | string[];
 }

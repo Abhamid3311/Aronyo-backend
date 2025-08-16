@@ -58,6 +58,14 @@ class ProductController {
         filter.brand = { $regex: queryParams.brand, $options: "i" };
       }
 
+      // ✅ Filter by tag (support multiple tags)
+      if (queryParams.tag) {
+        const tags = Array.isArray(queryParams.tag)
+          ? queryParams.tag
+          : queryParams.tag.split(","); // support comma-separated tags
+        filter.tags = { $in: tags };
+      }
+
       // Price range filter
       if (queryParams.minPrice || queryParams.maxPrice) {
         filter.price = {};
