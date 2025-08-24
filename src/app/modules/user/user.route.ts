@@ -5,7 +5,7 @@ import { authMiddleware } from "../../middlewares/auth.middleware";
 const router = Router();
 
 router.get(
-  "/profile",
+  "/me",
   authMiddleware(["user", "admin", "staff"]),
   userController.getProfile
 );
@@ -17,7 +17,11 @@ router.put(
 );
 
 // Admin-only routes
-router.get("/admin/all-users", authMiddleware(["admin"]), userController.getAllUsers);
+router.get(
+  "/admin/all-users",
+  authMiddleware(["admin"]),
+  userController.getAllUsers
+);
 router.patch("/:id", authMiddleware(["admin"]), userController.updateUser);
 router.delete("/:id", authMiddleware(["admin"]), userController.deleteUser);
 

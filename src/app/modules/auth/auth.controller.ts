@@ -47,15 +47,16 @@ export const authController = {
     }
   },
 
-  async refreshToken(req: Request, res: Response) {
+  async refreshToken(req: Request, res: Response): Promise<void> {
     try {
       const refreshToken = req.cookies.refreshToken;
       if (!refreshToken) {
-        return res.status(401).json({
+        res.status(401).json({
           success: false,
           message: "Refresh token not found",
         });
       }
+
       const result = await authService.refreshToken(refreshToken);
 
       res.status(200).json({
@@ -72,8 +73,8 @@ export const authController = {
 const setCookie = (res: Response, result: any) => {
   res.cookie("refreshToken", result.refreshToken, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "none",
+    secure: process.env.NODE_ENV === "production", // false on localhost
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
     maxAge: 7 * 24 * 60 * 60 * 1000,
   });
 };
