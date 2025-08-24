@@ -28,8 +28,6 @@ export class ProductService {
 
   async getProductById(id: string) {
     return await Product.findById(id);
-    // .populate("category")
-    // .populate("createdBy");
   }
 
   async updateProduct(id: string, updateData: Partial<IProduct>) {
