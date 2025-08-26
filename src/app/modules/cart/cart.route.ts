@@ -15,10 +15,10 @@ router.get(
   cartController.getCart
 );
 
-router.patch(
-  "/decrease",
+router.put(
+  "/update",
   authMiddleware(["user", "admin", "staff"]),
-  cartController.decreaseQuantity
+  cartController.updateQuantity
 );
 
 router.delete(
@@ -26,6 +26,7 @@ router.delete(
   authMiddleware(["user", "admin", "staff"]),
   cartController.removeItem
 );
+
 router.delete(
   "/",
   authMiddleware(["user", "admin", "staff"]),

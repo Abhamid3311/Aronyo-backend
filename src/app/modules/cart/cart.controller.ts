@@ -47,24 +47,27 @@ export const cartController = {
     }
   },
 
-  async decreaseQuantity(req: Request, res: Response): Promise<void> {
+  async updateQuantity(req: Request, res: Response): Promise<void> {
     try {
       const userId = req.user?.userId;
-      const { productId } = req.body;
-      if (!userId) {
-        throw new Error("User not authenticated");
-      }
-      if (!productId) {
-        throw new Error("Product ID is required");
-      }
-      const cart = await CartService.decreaseQuantity(userId, productId);
-      if (!cart) {
-        throw new Error("Cart or product not found");
-      }
+      const { productId, quantity } = req.body;
+
+      if (!userId) throw new Error("User not authenticated");
+      if (!productId) throw new Error("Product ID is required");
+      if (quantity === undefined) throw new Error("Quantity is required");
+
+      const cart = await CartService.updateQuantity(
+        userId,
+        productId,
+        quantity
+      );
+
+      if (!cart) throw new Error("Cart or product not found");
+
       res.status(200).json({
         success: true,
         data: cart,
-        message: "Quantity decreased successfully",
+        message: "Cart updated successfully",
       });
     } catch (error) {
       sendErrorResponse(error, res);

@@ -41,12 +41,12 @@ export const CartService = {
     });
   },
 
-  async decreaseQuantity(
+  async updateQuantity(
     userId: string,
-    productId: string
+    productId: string,
+    quantity: number
   ): Promise<ICart | null> {
     const cart = await Cart.findOne({ userId });
-
     if (!cart) return null;
 
     const itemIndex = cart.items.findIndex(
@@ -55,11 +55,10 @@ export const CartService = {
 
     if (itemIndex === -1) return null;
 
-    if (cart.items[itemIndex].quantity > 1) {
-      cart.items[itemIndex].quantity -= 1;
+    if (quantity <= 0) {
+      cart.items.splice(itemIndex, 1); // remove
     } else {
-      // If quantity is 1, remove the item from the cart
-      cart.items.splice(itemIndex, 1);
+      cart.items[itemIndex].quantity = quantity;
     }
 
     return await cart.save();

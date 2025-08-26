@@ -34,7 +34,7 @@ class ProductController {
       const queryParams: IQueryParams = req.query;
 
       const page = parseInt(queryParams.page || "1");
-      const limit = parseInt(queryParams.limit || "10");
+      const limit = parseInt(queryParams.limit || "12");
       const skip = (page - 1) * limit;
 
       const filter: FilterQuery<IProduct> = {};
