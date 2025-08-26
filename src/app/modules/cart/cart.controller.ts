@@ -6,7 +6,7 @@ export const cartController = {
   async addToCart(req: Request, res: Response): Promise<void> {
     try {
       const userId = req.user?.userId;
-      const { productId } = req.body;
+      const { productId, quantity = 1 } = req.body;
 
       if (!userId) {
         throw new Error("User not authenticated");
@@ -15,7 +15,7 @@ export const cartController = {
         throw new Error("Product ID is required");
       }
 
-      const cart = await CartService.addToCart(userId, productId);
+      const cart = await CartService.addToCart(userId, productId, quantity);
       res.status(200).json({
         success: true,
         data: cart,

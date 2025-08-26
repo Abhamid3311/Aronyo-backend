@@ -3,35 +3,42 @@ import { ICart } from "./cart.interface";
 import { Types } from "mongoose";
 
 export const CartService = {
-  async addToCart(userId: string, productId: string): Promise<ICart> {
+  async addToCart(
+    userId: string,
+    productId: string,
+    quantity: number = 1
+  ): Promise<ICart> {
     const cart = await Cart.findOne({ userId });
 
     if (cart) {
-      // Try to find the product in existing items
       const existingItem = cart.items.find(
         (item) => item.productId.toString() === productId
       );
 
       if (existingItem) {
-        existingItem.quantity += 1;
+        existingItem.quantity += quantity;
       } else {
         cart.items.push({
           productId: new Types.ObjectId(productId),
-          quantity: 1,
+          quantity,
         });
       }
 
       return await cart.save();
     } else {
-      // If no cart exists, create one
       return await Cart.create({
         userId,
-        items: [{ productId: new Types.ObjectId(productId), quantity: 1 }],
+        items: [{ productId: new Types.ObjectId(productId), quantity }],
       });
     }
   },
+
   async getCart(userId: string): Promise<ICart | null> {
-    return await Cart.findOne({ userId }).populate("items.productId");
+    // Populate productId to get full product details
+    return await Cart.findOne({ userId }).populate({
+      path: "items.productId",
+      select: "_id title price discountPrice images stock", // pick only what you need
+    });
   },
 
   async decreaseQuantity(
