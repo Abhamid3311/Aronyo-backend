@@ -64,7 +64,11 @@ export const authController = {
         data: { accessToken: result.accessToken, user: result.user },
       });
     } catch (error) {
-      sendErrorResponse(error, res);
+      res.status(401).json({
+        success: false,
+        message: "Refresh token not found",
+        error,
+      });
     }
   },
 };
