@@ -100,6 +100,15 @@ class ProductController {
     }
   }
 
+  async getProductsAdmin(req: Request, res: Response) {
+    try {
+      const products = await productService.getAllProductsForAdmin();
+      res.status(200).json({ success: true, data: products });
+    } catch (error) {
+      sendErrorResponse(error, res);
+    }
+  }
+
   async getProductById(req: Request, res: Response): Promise<void> {
     try {
       const product = await productService.getProductById(req.params.id);

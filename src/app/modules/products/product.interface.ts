@@ -10,12 +10,13 @@ export interface IProduct {
   brand?: string;
   images: string[];
   stock: number;
-  tags: string[];
+  tags?: string[];
   ratings: number;
   numReviews: number;
   size?: string;
   createdBy: Types.ObjectId;
   createdAt?: Date;
+  isActive: boolean;
 }
 
 export interface IQueryParams {

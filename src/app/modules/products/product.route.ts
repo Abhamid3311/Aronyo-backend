@@ -4,15 +4,20 @@ import { authMiddleware } from "../../middlewares/auth.middleware";
 
 const router = Router();
 
+router.get("/", productController.getProducts);
+router.get("/:id", productController.getProductById);
+
 router.post(
   "/create-product",
   authMiddleware(["admin", "staff"]),
   productController.createProduct
 );
 
-router.get("/", productController.getProducts);
-router.get("/:id", productController.getProductById);
-
+router.get(
+  "/admin/",
+  authMiddleware(["admin", "staff"]),
+  productController.getProductsAdmin
+);
 router.patch(
   "/update-product/:id",
   authMiddleware(["admin", "staff"]),

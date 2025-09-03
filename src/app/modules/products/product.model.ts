@@ -89,6 +89,10 @@ const productSchema = new Schema<IProduct>(
       ref: "User",
       required: [true, "Creator reference is required"],
     },
+    isActive: {
+      type: Boolean,
+      default: true,
+    },
   },
   { timestamps: true }
 );

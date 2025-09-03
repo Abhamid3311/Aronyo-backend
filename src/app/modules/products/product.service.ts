@@ -14,12 +14,17 @@ export class ProductService {
     limit: number,
     sort: string
   ) {
-    return await Product.find(filter)
-      // .populate("category")
-      // .populate("createdBy")
-      .skip(skip)
-      .limit(limit)
-      .sort(sort);
+    // Merge filter with default user filter
+    const userFilter = {
+      ...filter,
+      $or: [{ isActive: true }, { isActive: { $exists: false } }],
+    };
+
+    return await Product.find(userFilter).skip(skip).limit(limit).sort(sort);
+  }
+
+  async getAllProductsForAdmin(): Promise<IProduct[]> {
+    return await Product.find({});
   }
 
   async countProducts(filter: FilterQuery<IProduct>) {
