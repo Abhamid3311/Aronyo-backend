@@ -12,32 +12,38 @@ export const authMiddleware = (allowedRoles: string[]) => {
     next: NextFunction
   ): void => {
     try {
-      const token = req.headers.authorization?.split(" ")[1];
+      // ✅ Read accessToken from cookies
+      const token = req.cookies.accessToken;
       if (!token) {
-        res.status(401).json({ success: false, message: "No token provided" });
-        return;
+        res.status(401).json({
+          success: false,
+          message: "Access token not found. Please login.",
+        });
       }
 
+      // ✅ Verify token
       const decoded = jwt.verify(
         token,
         process.env.JWT_ACCESS_SECRET as string
-      ) as {
-        userId: string;
-        role: string;
-      };
+      ) as { userId: string; role: string };
 
+      // ✅ Check allowed roles
       if (!allowedRoles.includes(decoded.role)) {
-        res
-          .status(403)
-          .json({ success: false, message: "Unauthorized access" });
-        return;
+        res.status(403).json({
+          success: false,
+          message: "Unauthorized access",
+        });
       }
 
+      // ✅ Attach user to request
       req.user = decoded;
       next();
     } catch (error) {
-      console.log(error);
-      res.status(401).json({ success: false, message: "Invalid token" });
+      console.error("Auth Middleware Error:", error);
+      res.status(401).json({
+        success: false,
+        message: "Invalid or expired access token",
+      });
     }
   };
 };

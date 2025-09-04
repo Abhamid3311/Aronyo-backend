@@ -8,12 +8,13 @@ export const authController = {
     try {
       const userData = req.body;
       const result = await authService.register(userData);
-      setCookie(res, result);
+
+      setAuthCookies(res, result);
 
       res.status(201).json({
         success: true,
-        messgae: "User Registered Succefully!",
-        data: { accessToken: result.accessToken, user: result.user },
+        message: "User registered successfully!",
+        data: { user: result.user }, // no need to send access token to frontend
       });
     } catch (error) {
       sendErrorResponse(error, res);
@@ -24,11 +25,12 @@ export const authController = {
     try {
       const { email, password } = req.body;
       const result = await authService.login(email, password);
-      setCookie(res, result);
+
+      setAuthCookies(res, result);
 
       res.status(200).json({
         success: true,
-        data: { accessToken: result.accessToken, user: result.user },
+        data: { user: result.user }, // frontend relies on cookies now
       });
     } catch (error) {
       sendErrorResponse(error, res);
@@ -37,6 +39,8 @@ export const authController = {
 
   async logout(req: Request, res: Response) {
     try {
+      // Clear both access and refresh tokens
+      res.clearCookie("accessToken");
       res.clearCookie("refreshToken");
 
       res
@@ -51,34 +55,46 @@ export const authController = {
     try {
       const refreshToken = req.cookies.refreshToken;
       if (!refreshToken) {
-        res.status(401).json({
-          success: false,
-          message: "Refresh token not found",
-        });
+        res
+          .status(401)
+          .json({ success: false, message: "Refresh token not found" });
+        return;
       }
 
       const result = await authService.refreshToken(refreshToken);
 
-      res.status(200).json({
-        success: true,
-        data: { accessToken: result.accessToken, user: result.user },
+      // Set new short-lived access token cookie
+      res.cookie("accessToken", result.accessToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+        maxAge: 15 * 60 * 1000, // 15 minutes
       });
+
+      res.status(200).json({ success: true, data: { user: result.user } });
     } catch (error) {
-      res.status(401).json({
-        success: false,
-        message: "Refresh token not found",
-        error,
-      });
+      res
+        .status(401)
+        .json({ success: false, message: "Refresh token invalid", error });
     }
   },
 };
 
-// Set Cookie for Register & Login
-const setCookie = (res: Response, result: any) => {
+// Helper: set both refresh & access tokens on login/register
+const setAuthCookies = (res: Response, result: any) => {
+  // Refresh token - long-lived
   res.cookie("refreshToken", result.refreshToken, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production", // false on localhost
+    secure: process.env.NODE_ENV === "production",
     sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-    maxAge: 7 * 24 * 60 * 60 * 1000,
+    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+  });
+
+  // Access token - short-lived
+  res.cookie("accessToken", result.accessToken, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    maxAge: 15 * 60 * 1000, // 15 minutes
   });
 };

@@ -14,7 +14,7 @@ router.post(
 );
 
 router.get(
-  "/admin/",
+  "/admin",
   authMiddleware(["admin", "staff"]),
   productController.getProductsAdmin
 );
