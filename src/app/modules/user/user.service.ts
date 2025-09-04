@@ -17,7 +17,6 @@ export const userService = {
     userId: string,
     updateData: Partial<IUser>
   ): Promise<IUser> {
-
     if (updateData.password) {
       updateData.password = await bcrypt.hash(updateData.password, 10);
     }
@@ -26,7 +25,7 @@ export const userService = {
       new: true,
       runValidators: true,
     }).select("-password");
-    
+
     if (!user || user.isDeleted) {
       throw new Error("User not found");
     }
@@ -34,7 +33,7 @@ export const userService = {
   },
 
   async getAllUsers(): Promise<IUser[]> {
-    return await User.find({ isDeleted: false }).select("-password");
+    return await User.find({});
   },
 
   async updateUser(userId: string, updateData: Partial<IUser>): Promise<IUser> {

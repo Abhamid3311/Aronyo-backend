@@ -11,6 +11,7 @@ router.post(
 );
 
 router.get("/", categoryController.getAllCategories);
+router.get("/admin/all-categories", categoryController.getCategoriesAdmin);
 router.get("/:slug", categoryController.getSingleCategory);
 
 router.patch(

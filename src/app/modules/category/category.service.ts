@@ -11,6 +11,10 @@ class CategoryServiceClass {
     return await Category.find({ isActive: true }).sort({ createdAt: -1 });
   }
 
+  async getAllCategoriesForAdmin(): Promise<ICategory[]> {
+    return await Category.find({});
+  }
+
   async getSingleCategory(slug: string): Promise<ICategory | null> {
     return await Category.findOne({ slug, isActive: true });
   }

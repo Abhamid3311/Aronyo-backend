@@ -97,4 +97,12 @@ const productSchema = new Schema<IProduct>(
   { timestamps: true }
 );
 
+// 🔄 Pre-save hook to auto-generate slug from name
+productSchema.pre("save", function (next) {
+  if (this.isModified("title") || !this.slug) {
+    this.slug = this.title.toLowerCase().replace(/ /g, "-");
+  }
+  next();
+});
+
 export const Product = model<IProduct>("Product", productSchema);

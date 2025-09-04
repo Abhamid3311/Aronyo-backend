@@ -19,6 +19,15 @@ export const categoryController = {
     }
   },
 
+  async getCategoriesAdmin(req: Request, res: Response) {
+    try {
+      const categoris = await CategoryService.getAllCategoriesForAdmin();
+      res.status(200).json({ success: true, data: categoris });
+    } catch (error) {
+      sendErrorResponse(error, res);
+    }
+  },
+
   async getAllCategories(req: Request, res: Response): Promise<void> {
     try {
       const categories = await CategoryService.getAllCategories();

@@ -6,18 +6,19 @@ const router = Router();
 
 router.get("/", productController.getProducts);
 
+router.get(
+  "/admin/all-products",
+  authMiddleware(["admin", "staff"]),
+  productController.getProductsAdmin
+);
+
 router.post(
   "/create-product",
   authMiddleware(["admin", "staff"]),
   productController.createProduct
 );
 
-router.get(
-  "/admin",
-  authMiddleware(["admin", "staff"]),
-  productController.getProductsAdmin
-);
-router.patch(
+router.put(
   "/update-product/:id",
   authMiddleware(["admin", "staff"]),
   productController.updateProduct
