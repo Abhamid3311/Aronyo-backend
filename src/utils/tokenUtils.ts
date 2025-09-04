@@ -9,8 +9,8 @@ export const tokenUtils = {
     // Access token
     const accessToken = jwt.sign(
       { userId, role },
-      config.JWT_REFRESH_SECRET as string,
-      { expiresIn: "1h" }
+      config.JWT_ACCESS_SECRET as string,
+      { expiresIn: "15min" }
     );
 
     // Refresh token
