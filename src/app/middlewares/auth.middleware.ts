@@ -14,7 +14,6 @@ export const authMiddleware = (allowedRoles: string[]) => {
     try {
       // Read token from cookies
       const token = req.cookies?.accessToken;
-      console.log("accessToken: ", token);
 
       if (!token) {
         res.status(401).json({

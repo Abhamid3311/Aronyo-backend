@@ -11,7 +11,6 @@ const productSchema = new Schema<IProduct>(
     },
     slug: {
       type: String,
-      required: [true, "Product slug is required"],
       unique: true,
       lowercase: true,
     },
@@ -22,6 +21,10 @@ const productSchema = new Schema<IProduct>(
         10,
         "Product description must be at least 10 characters long",
       ],
+    },
+    detailsDesc: {
+      type: String,
+      trim: true,
     },
     price: {
       type: Number,

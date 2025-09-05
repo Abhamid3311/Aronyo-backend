@@ -2,8 +2,9 @@ import { Types } from "mongoose";
 
 export interface IProduct {
   title: string;
-  slug: string;
+  slug?: string;
   description: string;
+  detailsDesc?: string;
   price: number;
   discountPrice?: number;
   category: string;

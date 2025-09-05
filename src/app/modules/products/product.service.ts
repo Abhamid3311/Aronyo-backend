@@ -24,7 +24,7 @@ export class ProductService {
   }
 
   async getAllProductsForAdmin(): Promise<IProduct[]> {
-    return await Product.find({});
+    return await Product.find({}).sort({ createdAt: -1 });
   }
 
   async countProducts(filter: FilterQuery<IProduct>) {
