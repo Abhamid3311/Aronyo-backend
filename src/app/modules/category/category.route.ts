@@ -4,24 +4,34 @@ import { categoryController } from "./category.controller";
 
 const router = express.Router();
 
+router.get("/", categoryController.getAllCategories);
+
 router.post(
   "/create-category",
   authMiddleware(["admin"]),
   categoryController.createCategory
 );
 
-router.get("/", categoryController.getAllCategories);
-router.get("/admin/all-categories", categoryController.getCategoriesAdmin);
-router.get("/:slug", categoryController.getSingleCategory);
+router.get(
+  "/admin/all-categories",
+  authMiddleware(["admin"]),
+  categoryController.getCategoriesAdmin
+);
 
+router.get("/:id", categoryController.getSingleCategory);
+router.put(
+  "/:id",
+  authMiddleware(["admin"]),
+  categoryController.updateCategory
+);
 router.patch(
-  "/:slug",
+  "/status/:id",
   authMiddleware(["admin"]),
   categoryController.updateCategory
 );
 
 router.delete(
-  "/:slug",
+  "/:id",
   authMiddleware(["admin"]),
   categoryController.deleteCategory
 );

@@ -8,7 +8,10 @@ class CategoryServiceClass {
   }
 
   async getAllCategories(): Promise<ICategory[]> {
-    return await Category.find({ isActive: true }).sort({ createdAt: -1 });
+    return await Category.find(
+      { isActive: true }, // filter
+      { _id: 1, name: 1, slug: 1, image: 1 }
+    ).sort({ createdAt: -1 });
   }
 
   async getAllCategoriesForAdmin(): Promise<ICategory[]> {
@@ -27,6 +30,20 @@ class CategoryServiceClass {
       new: true,
       runValidators: true,
     });
+  }
+
+  async updateStatusCategory(id: string): Promise<ICategory | null> {
+    // Find the category and toggle isActive
+    const category = await Category.findById(id);
+    if (!category) throw new Error("Category not found");
+
+    const updatedCategory = await Category.findByIdAndUpdate(
+      id,
+      { isActive: !category.isActive },
+      { new: true, runValidators: true }
+    );
+
+    return updatedCategory;
   }
 
   async deleteCategory(slug: string): Promise<void> {

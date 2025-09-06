@@ -42,8 +42,8 @@ export const categoryController = {
 
   async getSingleCategory(req: Request, res: Response): Promise<void> {
     try {
-      const slug = req.params.slug;
-      const category = await CategoryService.getSingleCategory(slug);
+      const id = req.params.id;
+      const category = await CategoryService.getSingleCategory(id);
       res.status(200).json({
         success: true,
         data: category,
@@ -55,11 +55,11 @@ export const categoryController = {
 
   async updateCategory(req: Request, res: Response): Promise<void> {
     try {
-      const slug = req.params.slug;
+      const id = req.params.id;
       const updateData = req.body;
 
       const updatedCategory = await CategoryService.updateCategory(
-        slug,
+        id,
         updateData
       );
       res.status(200).json({
@@ -72,10 +72,25 @@ export const categoryController = {
     }
   },
 
+  async updateStatusCategory(req: Request, res: Response): Promise<void> {
+    try {
+      const id = req.params.id;
+      const updatedCategory = await CategoryService.updateStatusCategory(id);
+
+      res.status(200).json({
+        success: true,
+        message: `Category Status Updated successfully`,
+        data: updatedCategory,
+      });
+    } catch (error) {
+      sendErrorResponse(error, res);
+    }
+  },
+
   async deleteCategory(req: Request, res: Response): Promise<void> {
     try {
-      const slug = req.params.slug;
-      await CategoryService.deleteCategory(slug);
+      const id = req.params.id;
+      await CategoryService.deleteCategory(id);
       res.status(200).json({
         success: true,
         message: "Category deleted successfully",
