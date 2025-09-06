@@ -31,6 +31,11 @@ router.delete(
 );
 
 router.get("/:slug", productController.getProductBySlug);
-router.get("/:id", productController.getProductById);
+
+router.get(
+  "/admin/:id",
+  authMiddleware(["admin", "staff"]),
+  productController.getProductById
+);
 
 export const productRoutes = router;

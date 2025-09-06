@@ -17,7 +17,7 @@ export interface IProduct {
   size?: string;
   createdBy: Types.ObjectId;
   createdAt?: Date;
-  isActive: boolean;
+  isActive?: boolean;
 }
 
 export interface IQueryParams {

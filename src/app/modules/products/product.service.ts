@@ -32,7 +32,8 @@ export class ProductService {
   }
 
   async getProductById(id: string) {
-    return await Product.findById(id);
+    return await Product.findById(id).populate("createdBy", "name email");
+    // return await Product.findById(id);
   }
 
   async getProductBySlug(slug: string) {

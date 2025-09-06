@@ -90,7 +90,6 @@ const productSchema = new Schema<IProduct>(
     createdBy: {
       type: Schema.Types.ObjectId,
       ref: "User",
-      required: [true, "Creator reference is required"],
     },
     isActive: {
       type: Boolean,
