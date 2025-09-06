@@ -35,6 +35,14 @@ export class ProductService {
     return await Product.findById(id);
   }
 
+  async getProductBySlug(slug: string) {
+    const product = await Product.findOne({ slug }).lean();
+    if (!product) {
+      throw new Error("Product not found");
+    }
+    return product;
+  }
+
   async updateProduct(id: string, updateData: Partial<IProduct>) {
     return await Product.findByIdAndUpdate(id, updateData, {
       new: true,

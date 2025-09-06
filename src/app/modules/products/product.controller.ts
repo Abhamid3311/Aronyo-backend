@@ -129,6 +129,26 @@ class ProductController {
     }
   }
 
+  async getProductBySlug(req: Request, res: Response): Promise<void> {
+    try {
+      const product = await productService.getProductBySlug(req.params.slug);
+
+      if (!product) {
+        res.status(404).json({
+          success: false,
+          message: "Product not found",
+        });
+      }
+
+      res.status(200).json({
+        success: true,
+        data: product,
+      });
+    } catch (error: any) {
+      sendErrorResponse(error, res);
+    }
+  }
+
   async updateProduct(req: Request, res: Response): Promise<void> {
     try {
       const product = await productService.updateProduct(
