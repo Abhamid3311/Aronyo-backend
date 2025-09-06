@@ -15,7 +15,7 @@ class CategoryServiceClass {
   }
 
   async getAllCategoriesForAdmin(): Promise<ICategory[]> {
-    return await Category.find({});
+    return await Category.find({}).sort({ createdAt: -1 });
   }
 
   async getSingleCategory(slug: string): Promise<ICategory | null> {
@@ -46,9 +46,8 @@ class CategoryServiceClass {
     return updatedCategory;
   }
 
-  async deleteCategory(slug: string): Promise<void> {
-    // soft delete or hard delete (hard delete here)
-    await Category.findOneAndDelete({ slug });
+  async deleteCategory(id: string) {
+    return await Category.findByIdAndDelete(id);
   }
 }
 
