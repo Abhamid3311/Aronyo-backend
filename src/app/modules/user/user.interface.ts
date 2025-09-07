@@ -14,3 +14,9 @@ export interface IUser {
   isDeleted: boolean;
   createdAt?: Date;
 }
+
+export interface IUpdatePasswordInput {
+  userId: string;
+  currentPassword: string;
+  newPassword: string;
+}

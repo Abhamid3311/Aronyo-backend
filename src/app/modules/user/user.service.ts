@@ -1,7 +1,7 @@
 // src/modules/users/user.service.ts
 import bcrypt from "bcrypt";
 import { User } from "./user.model";
-import { IUser } from "./user.interface";
+import { IUpdatePasswordInput, IUser } from "./user.interface";
 
 export const userService = {
   async getProfile(userId: string): Promise<IUser> {
@@ -36,6 +36,14 @@ export const userService = {
     return await User.find({});
   },
 
+  async getSingleUser(userId: string): Promise<IUser | null> {
+    const user = await User.findById(userId).select("-password"); // exclude password
+    if (!user) {
+      throw new Error("User not found");
+    }
+    return user;
+  },
+
   async updateUser(userId: string, updateData: Partial<IUser>): Promise<IUser> {
     if (updateData.password) {
       updateData.password = await bcrypt.hash(updateData.password, 10);
@@ -59,5 +67,29 @@ export const userService = {
     if (!user) {
       throw new Error("User not found");
     }
+  },
+
+  // Update password
+  async updatePassword({
+    userId,
+    currentPassword,
+    newPassword,
+  }: IUpdatePasswordInput): Promise<void> {
+    const user = await User.findById(userId);
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    // Check current password
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
+    if (!isMatch) {
+      throw new Error("Current password is incorrect");
+    }
+
+    // Hash new password
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    user.password = hashedPassword;
+    await user.save();
   },
 };
