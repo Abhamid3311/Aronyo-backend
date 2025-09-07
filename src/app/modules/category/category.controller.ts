@@ -72,20 +72,7 @@ export const categoryController = {
     }
   },
 
-  async updateStatusCategory(req: Request, res: Response): Promise<void> {
-    try {
-      const id = req.params.id;
-      const updatedCategory = await CategoryService.updateStatusCategory(id);
 
-      res.status(200).json({
-        success: true,
-        message: `Category Status Updated successfully`,
-        data: updatedCategory,
-      });
-    } catch (error) {
-      sendErrorResponse(error, res);
-    }
-  },
 
   async deleteCategory(req: Request, res: Response): Promise<void> {
     try {

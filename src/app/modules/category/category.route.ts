@@ -18,17 +18,19 @@ router.get(
   categoryController.getCategoriesAdmin
 );
 
-router.get("/:id", categoryController.getSingleCategory);
+router.get(
+  "/:id",
+  authMiddleware(["admin"]),
+  categoryController.getSingleCategory
+);
+
 router.put(
   "/:id",
   authMiddleware(["admin"]),
   categoryController.updateCategory
 );
-router.patch(
-  "/status/:id",
-  authMiddleware(["admin"]),
-  categoryController.updateCategory
-);
+
+
 
 router.delete(
   "/:id",

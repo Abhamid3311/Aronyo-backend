@@ -18,32 +18,22 @@ class CategoryServiceClass {
     return await Category.find({}).sort({ createdAt: -1 });
   }
 
-  async getSingleCategory(slug: string): Promise<ICategory | null> {
-    return await Category.findOne({ slug, isActive: true });
+  async getSingleCategory(id: string): Promise<ICategory | null> {
+    return await Category.findById(id).populate("createdBy", "name email");
   }
 
   async updateCategory(
-    slug: string,
+    id: string,
     updateData: Partial<ICategory>
   ): Promise<ICategory | null> {
-    return await Category.findOneAndUpdate({ slug }, updateData, {
-      new: true,
-      runValidators: true,
-    });
-  }
-
-  async updateStatusCategory(id: string): Promise<ICategory | null> {
-    // Find the category and toggle isActive
-    const category = await Category.findById(id);
-    if (!category) throw new Error("Category not found");
-
-    const updatedCategory = await Category.findByIdAndUpdate(
-      id,
-      { isActive: !category.isActive },
-      { new: true, runValidators: true }
+    return await Category.findOneAndUpdate(
+      { _id: id }, // ✅ use _id
+      updateData,
+      {
+        new: true, // return updated doc
+        runValidators: true,
+      }
     );
-
-    return updatedCategory;
   }
 
   async deleteCategory(id: string) {

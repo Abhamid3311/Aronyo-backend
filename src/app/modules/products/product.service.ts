@@ -44,11 +44,16 @@ export class ProductService {
     return product;
   }
 
-  async updateProduct(id: string, updateData: Partial<IProduct>) {
-    return await Product.findByIdAndUpdate(id, updateData, {
-      new: true,
-      runValidators: true,
-    });
+  async updateProduct(
+    id: string,
+    updateData: Partial<IProduct>
+  ): Promise<IProduct | null> {
+    if (!id) throw new Error("Product ID is required");
+    return await Product.findOneAndUpdate(
+      { _id: id },
+      { $set: updateData },
+      { new: true, runValidators: true }
+    );
   }
 
   async deleteProduct(id: string) {
