@@ -40,6 +40,8 @@ export const userController = {
       sendErrorResponse(error, res);
     }
   },
+
+  
   async getSingleUser(req: Request, res: Response): Promise<void> {
     try {
       const userId = req.params.id;
