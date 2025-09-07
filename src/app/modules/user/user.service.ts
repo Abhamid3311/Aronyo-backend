@@ -33,7 +33,7 @@ export const userService = {
   },
 
   async getAllUsers(): Promise<IUser[]> {
-    return await User.find({});
+    return await User.find({ isDeleted: false });
   },
 
   async getSingleUser(userId: string): Promise<IUser | null> {
@@ -58,15 +58,18 @@ export const userService = {
     return user;
   },
 
-  async deleteUser(userId: string): Promise<void> {
+  async deleteUser(userId: string): Promise<IUser> {
     const user = await User.findByIdAndUpdate(
       userId,
-      { isDeleted: true },
+      { isDeleted: true, status: "inactive" },
       { new: true }
     );
+
     if (!user) {
       throw new Error("User not found");
     }
+
+    return user;
   },
 
   // Update password
