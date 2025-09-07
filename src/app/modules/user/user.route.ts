@@ -12,7 +12,7 @@ router.get(
 );
 
 router.put(
-  "/profile",
+  "/update-profile",
   authMiddleware(["user", "admin", "staff"]),
   userController.updateProfile
 );
@@ -31,11 +31,13 @@ router.get(
 );
 
 router.put(
-  "/admin/update/:id",
+  "/admin/update-user/:id",
   authMiddleware(["admin"]),
   userController.updateUser
 );
-router.delete("/:id", authMiddleware(["admin"]), userController.deleteUser);
-router.get("/:id", authMiddleware(["admin"]), userController.getSingleUser);
+
+router.delete("/delete-user/:id", authMiddleware(["admin"]), userController.deleteUser);
+
+router.get("/admin/:id", authMiddleware(["admin"]), userController.getSingleUser);
 
 export const userRoutes = router;
