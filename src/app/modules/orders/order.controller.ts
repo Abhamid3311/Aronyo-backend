@@ -11,14 +11,15 @@ export const orderController = {
   async createOrder(req: Request, res: Response): Promise<void> {
     try {
       const userId = req.user?.userId;
+      if (!userId) throw new Error("User not authenticated");
+
       const orderData = req.body;
-      if (!userId) {
-        throw new Error("User not authenticated");
-      }
       if (!orderData.shippingAddress || !orderData.paymentMethod) {
-        throw new Error("Shipping address and payment method are required");
+        throw new Error("Shipping address and payment method required");
       }
+
       const order = await OrderService.createOrder(userId, orderData);
+
       res.status(201).json({
         success: true,
         message: "Order created successfully",
@@ -28,7 +29,6 @@ export const orderController = {
       sendErrorResponse(error, res);
     }
   },
-
   async getAllOrders(req: Request, res: Response): Promise<void> {
     try {
       const userId = req.user?.userId;
@@ -52,7 +52,10 @@ export const orderController = {
       const limit = parseInt(queryParams.limit || "10");
       const skip = (page - 1) * limit;
 
-      const { orders, total } = await OrderService.getAllOrdersAdmin(skip, limit);
+      const { orders, total } = await OrderService.getAllOrdersAdmin(
+        skip,
+        limit
+      );
       res.status(200).json({
         success: true,
         data: orders,
@@ -95,7 +98,10 @@ export const orderController = {
       if (!statusData.orderStatus && !statusData.paymentStatus) {
         throw new Error("Order status or payment status is required");
       }
-      const updatedOrder = await OrderService.updateOrderStatus(orderId, statusData);
+      const updatedOrder = await OrderService.updateOrderStatus(
+        orderId,
+        statusData
+      );
       if (!updatedOrder) {
         throw new Error("Order not found");
       }

@@ -16,8 +16,9 @@ router.get(
   authMiddleware(["user", "admin", "staff"]),
   orderController.getAllOrders
 );
+
 router.get(
-  "/all",
+  "/admin/all-orders",
   authMiddleware(["admin", "staff"]),
   orderController.getAllOrdersAdmin
 );
@@ -29,13 +30,13 @@ router.get(
 );
 
 router.patch(
-  "/:orderId/status",
+  "/update-order/:orderId",
   authMiddleware(["admin", "staff"]),
   orderController.updateOrderStatus
 );
 
 router.delete(
-  "/:orderId",
+  "/delete-order/:orderId",
   authMiddleware(["admin", "staff"]),
   orderController.cancelOrder
 );

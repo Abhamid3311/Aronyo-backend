@@ -28,7 +28,7 @@ router.delete(
 );
 
 router.delete(
-  "/",
+  "/clear-cart",
   authMiddleware(["user", "admin", "staff"]),
   cartController.clearCart
 );

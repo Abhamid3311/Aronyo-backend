@@ -9,18 +9,19 @@ export const OrderService = {
     userId: string,
     orderData: Partial<IOrder>
   ): Promise<IOrder> {
-    // Get user's cart
+    // 1️⃣ Get cart
     const cart = await CartService.getCart(userId);
     if (!cart || !cart.items.length) {
       throw new Error("Cart is empty");
     }
 
-    // Prepare order items and calculate totalAmount
+    // 2️⃣ Build order items
     const orderItems = await Promise.all(
       cart.items.map(async (item) => {
         const product = await Product.findById(item.productId);
-        if (!product) {
-          throw new Error(`Product with ID ${item.productId} not found`);
+        if (!product) throw new Error(`Product not found`);
+        if (product.stock < item.quantity) {
+          throw new Error(`Insufficient stock for ${product.title}`);
         }
         return {
           product: item.productId,
@@ -29,20 +30,24 @@ export const OrderService = {
         };
       })
     );
+
+    // 3️⃣ Totals
     const totalAmount = orderItems.reduce(
-      (sum, item) => sum + item.quantity * item.price,
+      (sum, i) => sum + i.quantity * i.price,
       0
     );
     const deliveryCharge = orderData.deliveryCharge || 0;
     const totalPayable = totalAmount + deliveryCharge;
-    const transactionId = uuidv4();
 
-    // Create order
+    // 4️⃣ Transaction ID
+    const transactionId = "TXN-" + Date.now() + "-" + uuidv4().slice(0, 8);
+
+    // 5️⃣ Save order
     const order = await Order.create({
       user: userId,
       orderItems,
       shippingAddress: orderData.shippingAddress,
-      paymentMethod: orderData.paymentMethod,
+      paymentMethod: orderData.paymentMethod, // 🔥 either cod or online
       paymentStatus: "pending",
       orderStatus: "pending",
       totalAmount,
@@ -51,7 +56,7 @@ export const OrderService = {
       transactionId,
     });
 
-    // Clear cart after order creation
+    // 6️⃣ Clear cart
     await CartService.clearCart(userId);
 
     return order;

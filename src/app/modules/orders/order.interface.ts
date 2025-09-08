@@ -12,6 +12,7 @@ export interface IShippingAddress {
   city?: string;
   area?: string;
   address: string;
+  deliveryNotes?: string;
 }
 
 export interface IOrder extends Document {
