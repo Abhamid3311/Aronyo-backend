@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Types } from "mongoose";
 
 export interface IBlog {
@@ -10,6 +9,7 @@ export interface IBlog {
   category: string;
   slug?: string;
   author?: Types.ObjectId | string;
+  isPublished: boolean;
   createdBy?: Types.ObjectId | string;
   createdAt?: Date;
   updatedAt?: Date;
