@@ -24,7 +24,9 @@ class BlogService {
   }
 
   async getAllBlogsForAdmin(): Promise<IBlog[]> {
-    return await Blog.find({}).sort({ createdAt: -1 });
+    return await Blog.find({})
+      .sort({ createdAt: -1 })
+      .populate("createdBy", "name");
   }
 
   async countBlogs(filter: FilterQuery<IBlog>) {
