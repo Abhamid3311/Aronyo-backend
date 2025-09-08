@@ -16,7 +16,6 @@ class BlogController {
         return;
       }
 
-      blogData.author = userPayload.userId;
       blogData.createdBy = userPayload.userId;
 
       const blog = await blogService.createBlog(blogData);

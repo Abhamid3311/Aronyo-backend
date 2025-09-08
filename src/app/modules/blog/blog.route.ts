@@ -19,11 +19,11 @@ router.put(
 );
 
 router.delete(
-  "/:id",
+  "/delete-blog/:id",
   authMiddleware(["admin", "staff"]),
   blogController.deleteBlog
 );
 
-router.get("/admin/:id", blogController.getBlogById);
+router.get("/:id", blogController.getBlogById);
 
 export const blogRoutes = router;

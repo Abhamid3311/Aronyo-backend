@@ -8,7 +8,6 @@ export interface IBlog {
   tags?: string[];
   category: string;
   slug?: string;
-  author?: Types.ObjectId | string;
   isPublished: boolean;
   createdBy?: Types.ObjectId | string;
   createdAt?: Date;

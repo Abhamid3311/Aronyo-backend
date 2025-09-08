@@ -18,7 +18,7 @@ class BlogService {
       .sort(sort)
       .skip(skip)
       .limit(limit)
-      .populate("author", "name email");
+      .populate("createdBy", "name email");
   }
 
   async countBlogs(filter: FilterQuery<IBlog>) {
@@ -26,7 +26,7 @@ class BlogService {
   }
 
   async getBlogById(id: string) {
-    return await Blog.findById(id).populate("author", "name email");
+    return await Blog.findById(id).populate("createdBy", "name email");
   }
 
   async updateBlog(id: string, updateData: Partial<IBlog>) {

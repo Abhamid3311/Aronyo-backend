@@ -42,10 +42,6 @@ const blogSchema = new Schema<IBlog>(
       unique: true,
       lowercase: true,
     },
-    author: {
-      type: Schema.Types.ObjectId,
-      ref: "User",
-    },
     createdBy: {
       type: Schema.Types.ObjectId,
       ref: "User",
