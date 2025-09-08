@@ -14,11 +14,17 @@ class BlogService {
     limit: number,
     sort: string
   ) {
-    return await Blog.find(filter)
+    const finalFilter = { ...filter, isPublished: true };
+
+    return await Blog.find(finalFilter)
       .sort(sort)
       .skip(skip)
       .limit(limit)
-      .populate("createdBy", "name email");
+      .populate("createdBy", "name email image");
+  }
+
+  async getAllBlogsForAdmin(): Promise<IBlog[]> {
+    return await Blog.find({}).sort({ createdAt: -1 });
   }
 
   async countBlogs(filter: FilterQuery<IBlog>) {
@@ -26,7 +32,7 @@ class BlogService {
   }
 
   async getBlogById(id: string) {
-    return await Blog.findById(id).populate("createdBy", "name email");
+    return await Blog.findById(id).populate("createdBy", "name email image");
   }
 
   async updateBlog(id: string, updateData: Partial<IBlog>) {

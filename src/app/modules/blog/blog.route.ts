@@ -6,6 +6,12 @@ const router = Router();
 
 router.get("/", blogController.getBlogs);
 
+router.get(
+  "/admin/all-blogs",
+  authMiddleware(["admin", "staff"]),
+  blogController.getBlogsAdmin
+);
+
 router.post(
   "/create-blog",
   authMiddleware(["admin", "staff"]),

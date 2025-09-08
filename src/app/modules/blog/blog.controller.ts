@@ -17,7 +17,6 @@ class BlogController {
       }
 
       blogData.createdBy = userPayload.userId;
-
       const blog = await blogService.createBlog(blogData);
 
       res.status(200).json({
@@ -76,6 +75,15 @@ class BlogController {
         },
       });
     } catch (error: any) {
+      sendErrorResponse(error, res);
+    }
+  }
+
+  async getBlogsAdmin(req: Request, res: Response) {
+    try {
+      const blogs = await blogService.getAllBlogsForAdmin();
+      res.status(200).json({ success: true, data: blogs });
+    } catch (error) {
       sendErrorResponse(error, res);
     }
   }
