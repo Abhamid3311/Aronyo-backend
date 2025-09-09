@@ -78,7 +78,8 @@ export const paymentSuccess = async (
       params: req.params,
       body: req.body,
       query: req.query,
-    }); // Enhanced debug log
+    });
+
     const { tran_id } = req.params;
     const order = await Order.findOne({ transactionId: tran_id });
 
@@ -86,7 +87,6 @@ export const paymentSuccess = async (
       return res.redirect(`${CLIENT_BASE_URL}/payment/fail`);
     }
 
-    // Check for val_id in body or query (fallback for GET requests)
     const val_id = req.body.val_id || req.query.val_id;
     if (!val_id) {
       console.error(
@@ -94,7 +94,10 @@ export const paymentSuccess = async (
         req.body,
         req.query
       );
-      await OrderService.cancelOrder(String(order._id));
+      await OrderService.updateOrderStatus(String(order._id), {
+        paymentStatus: "failed",
+        orderStatus: "cancelled",
+      });
       return res.redirect(`${CLIENT_BASE_URL}/payment/fail`);
     }
 
@@ -107,16 +110,27 @@ export const paymentSuccess = async (
     ) {
       await OrderService.updateOrderStatus(String(order._id), {
         paymentStatus: "paid",
-        // status: "confirmed",
+        orderStatus: "confirmed", // ✅ better than leaving it pending
       });
       return res.redirect(`${CLIENT_BASE_URL}/payment/success`);
     } else {
-      await OrderService.cancelOrder(String(order._id));
+      await OrderService.updateOrderStatus(String(order._id), {
+        paymentStatus: "failed",
+        orderStatus: "cancelled",
+      });
       return res.redirect(`${CLIENT_BASE_URL}/payment/fail`);
     }
   } catch (error) {
     console.error("❌ Payment success handling failed:", error);
-    await Order.findOneAndDelete({ transactionId: req.params.tran_id });
+    if (req.params.tran_id) {
+      const order = await Order.findOne({ transactionId: req.params.tran_id });
+      if (order) {
+        await OrderService.updateOrderStatus(String(order._id), {
+          paymentStatus: "failed",
+          orderStatus: "cancelled",
+        });
+      }
+    }
     return res.redirect(`${CLIENT_BASE_URL}/payment/fail`);
   }
 };
