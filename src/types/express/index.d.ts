@@ -1,4 +1,4 @@
-import { IUser } from "../../lib/types"; // path to your IUser
+import { IUser } from "src/app/modules/user/user.interface";
 
 declare global {
   namespace Express {
