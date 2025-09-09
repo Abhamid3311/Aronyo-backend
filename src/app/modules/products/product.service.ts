@@ -3,7 +3,7 @@ import { Product } from "./product.model";
 import { IProduct } from "./product.interface";
 
 export class ProductService {
-  async createProduct(productData: IProduct) {
+  async createProduct(productData: Partial<IProduct>) {
     const product = new Product(productData);
     return await product.save();
   }

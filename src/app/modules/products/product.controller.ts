@@ -8,7 +8,7 @@ import { sendErrorResponse } from "../../../utils/sendErrorResponse";
 class ProductController {
   async createProduct(req: Request, res: Response): Promise<void> {
     try {
-      const productData: IProduct = req.body;
+      const productData = req.body;
       const userPayload = (req as any).user;
 
       if (!userPayload) {
