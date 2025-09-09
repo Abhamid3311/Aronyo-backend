@@ -16,7 +16,7 @@ export interface IShippingAddress {
 }
 
 export interface IOrder extends Document {
-  user: Types.ObjectId;
+  user: Types.ObjectId | string;
   orderItems: IOrderItem[];
   shippingAddress: IShippingAddress;
   paymentMethod: "cod" | "online";
