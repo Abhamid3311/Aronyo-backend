@@ -3,8 +3,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.WishlistController = void 0;
 const wishlist_service_1 = require("./wishlist.service");
 const addToWishlist = async (req, res) => {
+    var _a;
     try {
-        const userId = req.user?.userId;
+        const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.userId;
         const { productId } = req.body;
         if (!userId) {
             throw new Error("User not authenticated");
@@ -20,8 +21,9 @@ const addToWishlist = async (req, res) => {
     }
 };
 const removeFromWishlist = async (req, res) => {
+    var _a;
     try {
-        const userId = req.user?.userId;
+        const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.userId;
         const { productId } = req.body;
         if (!userId) {
             throw new Error("User not authenticated");
@@ -37,8 +39,9 @@ const removeFromWishlist = async (req, res) => {
     }
 };
 const getWishlist = async (req, res) => {
+    var _a;
     try {
-        const userId = req.user?.userId;
+        const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.userId;
         if (!userId) {
             throw new Error("User not authenticated");
         }

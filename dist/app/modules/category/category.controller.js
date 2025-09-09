@@ -5,8 +5,9 @@ const category_service_1 = require("./category.service");
 const sendErrorResponse_1 = require("../../../utils/sendErrorResponse");
 exports.categoryController = {
     async createCategory(req, res) {
+        var _a;
         try {
-            const userId = req.user?.userId;
+            const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.userId;
             const categoryData = { ...req.body, createdBy: userId };
             const category = await category_service_1.CategoryService.createCategory(categoryData);
             res.status(201).json({

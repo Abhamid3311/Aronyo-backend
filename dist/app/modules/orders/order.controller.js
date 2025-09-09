@@ -5,8 +5,9 @@ const order_service_1 = require("./order.service");
 const sendErrorResponse_1 = require("../../../utils/sendErrorResponse");
 exports.orderController = {
     async createOrder(req, res) {
+        var _a;
         try {
-            const userId = req.user?.userId;
+            const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.userId;
             if (!userId)
                 throw new Error("User not authenticated");
             const orderData = req.body;
@@ -25,8 +26,9 @@ exports.orderController = {
         }
     },
     async getAllOrders(req, res) {
+        var _a;
         try {
-            const userId = req.user?.userId;
+            const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.userId;
             if (!userId) {
                 throw new Error("User not authenticated");
             }
@@ -63,8 +65,9 @@ exports.orderController = {
         }
     },
     async getSingleOrder(req, res) {
+        var _a;
         try {
-            const userId = req.user?.userId;
+            const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.userId;
             const orderId = req.params.orderId;
             if (!userId) {
                 throw new Error("User not authenticated");

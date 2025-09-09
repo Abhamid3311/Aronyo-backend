@@ -7,9 +7,10 @@ exports.authMiddleware = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const authMiddleware = (allowedRoles) => {
     return (req, res, next) => {
+        var _a;
         try {
             // Read token from cookies
-            const token = req.cookies?.accessToken;
+            const token = (_a = req.cookies) === null || _a === void 0 ? void 0 : _a.accessToken;
             if (!token) {
                 res.status(401).json({
                     success: false,

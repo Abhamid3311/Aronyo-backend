@@ -5,8 +5,9 @@ const user_service_1 = require("./user.service");
 const sendErrorResponse_1 = require("../../../utils/sendErrorResponse");
 exports.userController = {
     async getProfile(req, res) {
+        var _a;
         try {
-            const userId = req.user?.userId;
+            const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.userId;
             const user = await user_service_1.userService.getProfile(userId);
             res.status(200).json({ success: true, data: user });
         }
@@ -15,8 +16,9 @@ exports.userController = {
         }
     },
     async updateProfile(req, res) {
+        var _a;
         try {
-            const userId = req.user?.userId;
+            const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.userId;
             const updateData = req.body;
             if (!updateData) {
                 res

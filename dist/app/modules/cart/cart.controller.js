@@ -5,8 +5,9 @@ const cart_service_1 = require("./cart.service");
 const sendErrorResponse_1 = require("../../../utils/sendErrorResponse");
 exports.cartController = {
     async addToCart(req, res) {
+        var _a;
         try {
-            const userId = req.user?.userId;
+            const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.userId;
             const { productId, quantity = 1 } = req.body;
             if (!userId) {
                 throw new Error("User not authenticated");
@@ -26,8 +27,9 @@ exports.cartController = {
         }
     },
     async getCart(req, res) {
+        var _a;
         try {
-            const userId = req.user?.userId;
+            const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.userId;
             if (!userId) {
                 throw new Error("User not authenticated");
             }
@@ -46,8 +48,9 @@ exports.cartController = {
         }
     },
     async updateQuantity(req, res) {
+        var _a;
         try {
-            const userId = req.user?.userId;
+            const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.userId;
             const { productId, quantity } = req.body;
             if (!userId)
                 throw new Error("User not authenticated");
@@ -69,8 +72,9 @@ exports.cartController = {
         }
     },
     async removeItem(req, res) {
+        var _a;
         try {
-            const userId = req.user?.userId;
+            const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.userId;
             const { productId } = req.body;
             if (!userId) {
                 throw new Error("User not authenticated");
@@ -93,8 +97,9 @@ exports.cartController = {
         }
     },
     async clearCart(req, res) {
+        var _a;
         try {
-            const userId = req.user?.userId;
+            const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.userId;
             if (!userId) {
                 throw new Error("User not authenticated");
             }
