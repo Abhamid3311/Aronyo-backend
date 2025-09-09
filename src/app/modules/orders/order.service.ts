@@ -99,19 +99,16 @@ export const OrderService = {
     orderId: string,
     statusData: { orderStatus?: string; paymentStatus?: string }
   ): Promise<IOrder | null> {
-    // 1️⃣ Fetch the existing order first
     const order = await Order.findById(orderId);
     if (!order) return null;
 
-    // 2️⃣ Check if order is COD and new status is 'delivered'
     if (
       order.paymentMethod === "cod" &&
       statusData.orderStatus === "delivered"
     ) {
-      statusData.paymentStatus = "paid"; // automatically mark as paid
+      statusData.paymentStatus = "paid";
     }
 
-    // 3️⃣ Update order with new status
     const updatedOrder = await Order.findOneAndUpdate(
       { _id: orderId },
       statusData,
