@@ -75,7 +75,7 @@ export const OrderService = {
     const [orders, total] = await Promise.all([
       Order.find()
         .populate("orderItems.product")
-        .populate("user", "username email")
+        .populate("user", "name email")
         .skip(skip)
         .limit(limit),
       Order.countDocuments(),

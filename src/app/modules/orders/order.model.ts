@@ -13,6 +13,7 @@ const shippingAddressSchema = new Schema<IShippingAddress>({
   city: { type: String, trim: true },
   area: { type: String, trim: true },
   address: { type: String, required: true, trim: true },
+  deliveryNotes: { type: String, trim: true },
 });
 
 const orderSchema = new Schema<IOrder>(

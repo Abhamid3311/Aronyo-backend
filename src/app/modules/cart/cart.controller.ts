@@ -37,6 +37,7 @@ export const cartController = {
       if (!cart) {
         throw new Error("Cart not found");
       }
+      
       res.status(200).json({
         success: true,
         data: cart,

@@ -29,6 +29,7 @@ export const orderController = {
       sendErrorResponse(error, res);
     }
   },
+  
   async getAllOrders(req: Request, res: Response): Promise<void> {
     try {
       const userId = req.user?.userId;
