@@ -37,7 +37,7 @@ router.patch(
 
 router.delete(
   "/delete-order/:orderId",
-  authMiddleware(["admin", "staff"]),
+  authMiddleware(["user", "admin", "staff"]),
   orderController.cancelOrder
 );
 

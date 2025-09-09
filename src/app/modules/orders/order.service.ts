@@ -63,10 +63,13 @@ export const OrderService = {
   },
 
   async getAllOrders(userId: string): Promise<IOrder[]> {
-    return await Order.find({ user: userId })
+    return await Order.find({
+      user: userId,
+      orderStatus: { $ne: "cancelled" }, // 🚫 exclude cancelled
+    })
       .populate("orderItems.product")
       .populate("user", "name email")
-      .sort({ createdAt: -1 });
+      .sort({ createdAt: -1 }); // ✅ newest first
   },
 
   async getAllOrdersAdmin(
