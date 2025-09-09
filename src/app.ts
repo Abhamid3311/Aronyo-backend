@@ -1,5 +1,4 @@
-import express from 'express';
-import type { Application, Request, Response} from 'express';
+import express, { Application, Request, Response } from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import { authRoutes } from "./app/modules/auth/auth.route";
