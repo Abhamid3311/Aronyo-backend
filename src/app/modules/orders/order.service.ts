@@ -65,7 +65,8 @@ export const OrderService = {
   async getAllOrders(userId: string): Promise<IOrder[]> {
     return await Order.find({ user: userId })
       .populate("orderItems.product")
-      .populate("user", "username email");
+      .populate("user", "name email")
+      .sort({ createdAt: -1 });
   },
 
   async getAllOrdersAdmin(
@@ -76,8 +77,10 @@ export const OrderService = {
       Order.find()
         .populate("orderItems.product")
         .populate("user", "name email")
+        .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limit),
+
       Order.countDocuments(),
     ]);
     return { orders, total };
@@ -89,17 +92,33 @@ export const OrderService = {
   ): Promise<IOrder | null> {
     return await Order.findOne({ _id: orderId, user: userId })
       .populate("orderItems.product")
-      .populate("user", "username email");
+      .populate("user", "name email");
   },
 
   async updateOrderStatus(
     orderId: string,
     statusData: { orderStatus?: string; paymentStatus?: string }
   ): Promise<IOrder | null> {
-    return await Order.findOneAndUpdate({ _id: orderId }, statusData, {
-      new: true,
-      runValidators: true,
-    }).populate("orderItems.product");
+    // 1️⃣ Fetch the existing order first
+    const order = await Order.findById(orderId);
+    if (!order) return null;
+
+    // 2️⃣ Check if order is COD and new status is 'delivered'
+    if (
+      order.paymentMethod === "cod" &&
+      statusData.orderStatus === "delivered"
+    ) {
+      statusData.paymentStatus = "paid"; // automatically mark as paid
+    }
+
+    // 3️⃣ Update order with new status
+    const updatedOrder = await Order.findOneAndUpdate(
+      { _id: orderId },
+      statusData,
+      { new: true, runValidators: true }
+    ).populate("orderItems.product");
+
+    return updatedOrder;
   },
 
   async cancelOrder(orderId: string): Promise<IOrder | null> {
