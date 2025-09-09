@@ -21,8 +21,7 @@ const store_id = process.env.STORE_ID;
 const store_passwd = process.env.STORE_SECRET_KEY;
 const BACKEND_BASE_URL = process.env.BACKEND_BASE_URL;
 const CLIENT_BASE_URL = process.env.CLIENT_BASE_URL;
-
-const is_live = false; //true for live, false for sandbox
+const is_live = process.env.is_live; //true for live, false for sandbox
 
 // Function to initiate SSLCOMMERZ payment
 export const initiateSSLCommerzPayment = async (
