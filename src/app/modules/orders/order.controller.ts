@@ -28,13 +28,13 @@ export const orderController = {
         throw new Error("Invalid payment method. Use 'cod' or 'online'");
       }
 
-      // 1️⃣ Get cart
+      // Get cart
       const cart = await CartService.getCart(userId);
       if (!cart || !cart.items.length) {
         throw new Error("Cart is empty");
       }
 
-      // 2️⃣ Build order items
+      //Build order items
       const orderItems = await Promise.all(
         cart.items.map(async (item) => {
           const product = await Product.findById(item.productId);
@@ -50,17 +50,17 @@ export const orderController = {
         })
       );
 
-      // 3️⃣ Totals
+      // Totals
       const totalAmount = orderItems.reduce(
         (sum, i) => sum + i.quantity * i.price,
         0
       );
       const totalPayable = totalAmount + deliveryCharge;
 
-      // 4️⃣ Transaction ID
+      // Transaction ID
       const transactionId = "TXN-" + Date.now() + "-" + uuidv4().slice(0, 8);
 
-      // 5️⃣ Create order data
+      // Create order data
       const orderData = {
         user: userId,
         orderItems,
@@ -74,16 +74,17 @@ export const orderController = {
         transactionId,
       };
 
-      // 6️⃣ Save order via Service
+      //  Save order via Service
       const order = await OrderService.createOrder(orderData);
 
-      // 7️⃣ Clear cart
+      //  Clear cart
       await CartService.clearCart(userId);
 
-      // 8️⃣ Handle payment method
+      // Handle payment method
       if (paymentMethod === "online") {
         // Get user details for SSL Commerce
         const user = await User.findById(userId); // Assuming you have User model
+
         if (!user) {
           // Rollback: delete order if user not found
           await OrderService.cancelOrder(String(order._id));
@@ -92,7 +93,6 @@ export const orderController = {
 
         // Initiate SSL Commerce payment
         const paymentUrl = await initiateSSLCommerzPayment(order, user);
-
         if (paymentUrl) {
           res.status(200).json({
             success: true,

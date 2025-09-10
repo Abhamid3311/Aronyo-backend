@@ -18,10 +18,10 @@ export interface PaymentBody {
 }
 
 const store_id = process.env.STORE_ID;
-const store_passwd = process.env.STORE_SECRET_KEY;
+const store_passwd = process.env.STORE_PASSWORD;
 const BACKEND_BASE_URL = process.env.BACKEND_BASE_URL;
 const CLIENT_BASE_URL = process.env.CLIENT_BASE_URL;
-const is_live = process.env.is_live; //true for live, false for sandbox
+const is_live = false;
 
 // Function to initiate SSLCOMMERZ payment
 // Updated function to work with your new order structure
@@ -53,6 +53,7 @@ export const initiateSSLCommerzPayment = async (
       cus_country: "Bangladesh",
       cus_phone: order.shippingAddress.phone,
       ship_name: order.shippingAddress.name || "Customer",
+      ship_add1: order.shippingAddress.address,
       ship_city: "Dhaka",
       ship_state: "Dhaka",
       ship_postcode: 1000,
