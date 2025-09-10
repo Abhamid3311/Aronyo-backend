@@ -24,6 +24,7 @@ const CLIENT_BASE_URL = process.env.CLIENT_BASE_URL;
 const is_live = process.env.is_live; //true for live, false for sandbox
 
 // Function to initiate SSLCOMMERZ payment
+// Updated function to work with your new order structure
 export const initiateSSLCommerzPayment = async (
   order: IOrder,
   user: any

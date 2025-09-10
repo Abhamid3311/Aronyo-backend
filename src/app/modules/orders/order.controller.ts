@@ -4,6 +4,8 @@ import { sendErrorResponse } from "../../../utils/sendErrorResponse";
 import { CartService } from "../cart/cart.service";
 import { v4 as uuidv4 } from "uuid";
 import { Product } from "../products/product.model";
+import { initiateSSLCommerzPayment } from "./handelPayment";
+import { User } from "../user/user.model";
 
 interface IQueryParams {
   page?: string;
@@ -11,8 +13,113 @@ interface IQueryParams {
 }
 
 export const orderController = {
-  
   async createOrder(req: Request, res: Response): Promise<void> {
+    try {
+      const userId = req.user?.userId;
+      if (!userId) throw new Error("User not authenticated");
+
+      const { shippingAddress, paymentMethod, deliveryCharge = 0 } = req.body;
+      if (!shippingAddress || !paymentMethod) {
+        throw new Error("Shipping address and payment method required");
+      }
+
+      // Validate payment method
+      if (!["cod", "online"].includes(paymentMethod)) {
+        throw new Error("Invalid payment method. Use 'cod' or 'online'");
+      }
+
+      // 1️⃣ Get cart
+      const cart = await CartService.getCart(userId);
+      if (!cart || !cart.items.length) {
+        throw new Error("Cart is empty");
+      }
+
+      // 2️⃣ Build order items
+      const orderItems = await Promise.all(
+        cart.items.map(async (item) => {
+          const product = await Product.findById(item.productId);
+          if (!product) throw new Error(`Product not found`);
+          if (product.stock < item.quantity) {
+            throw new Error(`Insufficient stock for ${product.title}`);
+          }
+          return {
+            product: item.productId,
+            quantity: item.quantity,
+            price: product.price,
+          };
+        })
+      );
+
+      // 3️⃣ Totals
+      const totalAmount = orderItems.reduce(
+        (sum, i) => sum + i.quantity * i.price,
+        0
+      );
+      const totalPayable = totalAmount + deliveryCharge;
+
+      // 4️⃣ Transaction ID
+      const transactionId = "TXN-" + Date.now() + "-" + uuidv4().slice(0, 8);
+
+      // 5️⃣ Create order data
+      const orderData = {
+        user: userId,
+        orderItems,
+        shippingAddress,
+        paymentMethod,
+        paymentStatus: "pending" as const,
+        orderStatus: "pending" as const,
+        totalAmount,
+        deliveryCharge,
+        totalPayable,
+        transactionId,
+      };
+
+      // 6️⃣ Save order via Service
+      const order = await OrderService.createOrder(orderData);
+
+      // 7️⃣ Clear cart
+      await CartService.clearCart(userId);
+
+      // 8️⃣ Handle payment method
+      if (paymentMethod === "online") {
+        // Get user details for SSL Commerce
+        const user = await User.findById(userId); // Assuming you have User model
+        if (!user) {
+          // Rollback: delete order if user not found
+          await OrderService.cancelOrder(String(order._id));
+          throw new Error("User not found");
+        }
+
+        // Initiate SSL Commerce payment
+        const paymentUrl = await initiateSSLCommerzPayment(order, user);
+
+        if (paymentUrl) {
+          res.status(200).json({
+            success: true,
+            message: "Redirect to SSLCommerz for payment",
+            paymentUrl,
+            orderId: order._id,
+          });
+          return;
+        } else {
+          // Payment initiation failed - rollback
+          await OrderService.cancelOrder(String(order._id));
+          throw new Error("Failed to initiate online payment");
+        }
+      }
+
+      // For COD payment
+      res.status(201).json({
+        success: true,
+        message: "Order created successfully with Cash on Delivery",
+        data: order,
+      });
+    } catch (error) {
+      sendErrorResponse(error, res);
+    }
+  },
+
+  /*   async createOrder(req: Request, res: Response): Promise<void> {
     try {
       const userId = req.user?.userId;
       if (!userId) throw new Error("User not authenticated");
@@ -80,7 +187,7 @@ export const orderController = {
     } catch (error) {
       sendErrorResponse(error, res);
     }
-  },
+  }, */
 
   async getAllOrders(req: Request, res: Response): Promise<void> {
     try {
