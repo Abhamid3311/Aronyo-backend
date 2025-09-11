@@ -29,12 +29,6 @@ router.get(
   orderController.getAllOrdersAdmin
 );
 
-router.get(
-  "/:orderId",
-  authMiddleware(["user", "admin", "staff"]),
-  orderController.getSingleOrder
-);
-
 router.patch(
   "/update-order/:orderId",
   authMiddleware(["admin", "staff"]),
@@ -45,6 +39,12 @@ router.delete(
   "/delete-order/:orderId",
   authMiddleware(["user", "admin", "staff"]),
   orderController.cancelOrder
+);
+
+router.get(
+  "/:orderId",
+  authMiddleware(["user", "admin", "staff"]),
+  orderController.getSingleOrder
 );
 
 // SSL Commerce callback routes

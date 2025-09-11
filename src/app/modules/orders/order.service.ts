@@ -34,15 +34,11 @@ export const OrderService = {
     return { orders, total };
   },
 
-  async getSingleOrder(
-    orderId: string,
-    userId: string
-  ): Promise<IOrder | null> {
-    return await Order.findOne({ _id: orderId, user: userId })
+  async getSingleOrder(orderId: string): Promise<IOrder | null> {
+    return await Order.findById(orderId)
       .populate("orderItems.product")
       .populate("user", "name email");
   },
-
   async updateOrderStatus(
     orderId: string,
     statusData: { orderStatus?: string; paymentStatus?: string }
