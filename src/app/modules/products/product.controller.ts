@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Request, Response } from "express";
 import { productService } from "./product.service";
-import { IProduct, IQueryParams } from "./product.interface";
+import { IProduct } from "./product.interface";
 import { FilterQuery } from "mongoose";
 import { sendErrorResponse } from "../../../utils/sendErrorResponse";
 
@@ -13,6 +13,7 @@ class ProductController {
 
       if (!userPayload) {
         res.status(401).json({ success: false, message: "Unauthorized" });
+        return;
       }
 
       // Set createdBy from token's userId
@@ -29,44 +30,94 @@ class ProductController {
     }
   }
 
+  //  NEW: Get filter options for frontend dropdowns
+  async getFilterOptions(req: Request, res: Response) {
+    try {
+      const filters = await productService.getFilterOptions();
+
+      res.status(200).json({
+        success: true,
+        data: filters,
+        message: "Filter options fetched successfully",
+      });
+    } catch (error: any) {
+      sendErrorResponse(error, res);
+    }
+  }
+
   async getProducts(req: Request, res: Response) {
     try {
-      const queryParams: IQueryParams = req.query;
+      const queryParams = req.query as Record<string, any>;
 
       const page = parseInt(queryParams.page || "1");
       const limit = parseInt(queryParams.limit || "12");
       const skip = (page - 1) * limit;
 
       const filter: FilterQuery<IProduct> = {};
+      const andConditions: any[] = [];
 
-      // Search functionality
-      if (queryParams.search) {
-        filter.$or = [
-          { title: { $regex: queryParams.search, $options: "i" } },
-          { description: { $regex: queryParams.search, $options: "i" } },
-          { brand: { $regex: queryParams.search, $options: "i" } },
-        ];
+      // Search - FIXED: Use $or instead of $and
+      if (queryParams.search && queryParams.search.trim()) {
+        andConditions.push({
+          $or: [
+            { title: { $regex: queryParams.search.trim(), $options: "i" } },
+            {
+              description: { $regex: queryParams.search.trim(), $options: "i" },
+            },
+            { brand: { $regex: queryParams.search.trim(), $options: "i" } },
+            { category: { $regex: queryParams.search.trim(), $options: "i" } },
+          ],
+        });
       }
 
-      // Filter by category
-      if (queryParams.category) {
-        filter.category = queryParams.category;
+      //  Multi-size filter - FIXED: Use 'size' (singular) not 'sizes'
+      if (queryParams.size && queryParams.size.trim()) {
+        const sizes = Array.isArray(queryParams.size)
+          ? queryParams.size
+          : queryParams.size
+              .split(",")
+              .map((s: string) => s.trim())
+              .filter(Boolean);
+
+        if (sizes.length > 0) {
+          filter.size = { $in: sizes };
+        }
       }
 
-      // Filter by brand
-      if (queryParams.brand) {
-        filter.brand = { $regex: queryParams.brand, $options: "i" };
+      // Category
+      if (queryParams.category && queryParams.category.trim()) {
+        filter.category = queryParams.category.trim();
       }
 
-      // ✅ Filter by tag (support multiple tags)
-      if (queryParams.tag) {
-        const tags = Array.isArray(queryParams.tag)
-          ? queryParams.tag
-          : queryParams.tag.split(","); // support comma-separated tags
-        filter.tags = { $in: tags };
+      //  Multi-brand filter
+      if (queryParams.brand && queryParams.brand.trim()) {
+        const brands = Array.isArray(queryParams.brand)
+          ? queryParams.brand
+          : queryParams.brand
+              .split(",")
+              .map((b: string) => b.trim())
+              .filter(Boolean);
+
+        if (brands.length > 0) {
+          filter.brand = { $in: brands.map((b: string) => new RegExp(b, "i")) };
+        }
       }
 
-      // Price range filter
+      // Multi-tag filter
+      if (queryParams.tags && queryParams.tags.trim()) {
+        const tags = Array.isArray(queryParams.tags)
+          ? queryParams.tags
+          : queryParams.tags
+              .split(",")
+              .map((t: string) => t.trim())
+              .filter(Boolean);
+
+        if (tags.length > 0) {
+          filter.tags = { $in: tags };
+        }
+      }
+
+      // Price range
       if (queryParams.minPrice || queryParams.maxPrice) {
         filter.price = {};
         if (queryParams.minPrice) {
@@ -77,9 +128,15 @@ class ProductController {
         }
       }
 
-      // Sorting
+      // Combine search with other filters
+      if (andConditions.length > 0) {
+        filter.$and = andConditions;
+      }
+
+      //  Sorting
       const sort = queryParams.sort || "-createdAt";
 
+      //  Query DB
       const [products, total] = await Promise.all([
         productService.getProducts(filter, skip, limit, sort),
         productService.countProducts(filter),
@@ -96,6 +153,7 @@ class ProductController {
         },
       });
     } catch (error: any) {
+      console.error(" Error in getProducts:", error);
       sendErrorResponse(error, res);
     }
   }
@@ -118,6 +176,7 @@ class ProductController {
           success: false,
           message: "Product not found",
         });
+        return;
       }
 
       res.status(200).json({
@@ -138,6 +197,7 @@ class ProductController {
           success: false,
           message: "Product not found",
         });
+        return;
       }
 
       res.status(200).json({
@@ -161,6 +221,7 @@ class ProductController {
           success: false,
           message: "Product not found",
         });
+        return;
       }
       res.status(200).json({
         success: true,
@@ -180,6 +241,7 @@ class ProductController {
           success: false,
           message: "Product not found",
         });
+        return;
       }
 
       res.status(200).json({

@@ -4,6 +4,7 @@ import { authMiddleware } from "../../middlewares/auth.middleware";
 
 const router = Router();
 
+router.get("/filters", productController.getFilterOptions);
 router.get("/", productController.getProducts);
 
 router.get(

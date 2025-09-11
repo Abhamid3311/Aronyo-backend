@@ -8,6 +8,23 @@ export class ProductService {
     return await product.save();
   }
 
+  async getFilterOptions() {
+    const brands = await Product.distinct("brand");
+    const categories = await Product.distinct("category");
+    const tags = await Product.distinct("tags");
+
+    // FIXED: Use 'size' (singular) instead of 'sizes' (plural)
+    const sizes = await Product.distinct("size");
+
+    return {
+      brands: brands.filter(Boolean),
+      categories: categories.filter(Boolean),
+      tags: tags.filter(Boolean),
+      sizes: sizes.filter(Boolean),
+    };
+  }
+
+  // New Added
   async getProducts(
     filter: FilterQuery<IProduct>,
     skip: number,
@@ -23,12 +40,16 @@ export class ProductService {
     return await Product.find(userFilter).skip(skip).limit(limit).sort(sort);
   }
 
-  async getAllProductsForAdmin(): Promise<IProduct[]> {
-    return await Product.find({}).sort({ createdAt: -1 });
+  async countProducts(filter: FilterQuery<IProduct>) {
+    const userFilter = {
+      ...filter,
+      $or: [{ isActive: true }, { isActive: { $exists: false } }],
+    };
+    return await Product.countDocuments(userFilter);
   }
 
-  async countProducts(filter: FilterQuery<IProduct>) {
-    return await Product.countDocuments(filter);
+  async getAllProductsForAdmin(): Promise<IProduct[]> {
+    return await Product.find({}).sort({ createdAt: -1 });
   }
 
   async getProductById(id: string) {
