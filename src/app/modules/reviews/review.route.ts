@@ -4,21 +4,46 @@ import { authMiddleware } from "../../middlewares/auth.middleware";
 
 const router = Router();
 
-// Create or update review - only logged-in users
+// User routes
 router.post(
   "/add-review",
-  authMiddleware(["user", "admin"]),
+  authMiddleware(["user"]),
   reviewController.createReview
 );
 
-// Get all reviews for a product
-router.get("/product/:productId", reviewController.getProductReviews);
-router.get("/", authMiddleware(["admin"]), reviewController.getAllReviews);
-router.put("/:id", authMiddleware(["user"]), reviewController.updateReview);
+router.get(
+  "/view-review/:id",
+  authMiddleware(["user"]),
+  reviewController.getSingleReview
+);
+
+router.put(
+  "/edit-review/:id",
+  authMiddleware(["user"]),
+  reviewController.updateReview
+);
+
 router.delete(
-  "/:id",
-  authMiddleware(["user", "admin"]),
+  "/delete-review/:id",
+  authMiddleware(["user"]),
   reviewController.deleteReview
+);
+
+// Admin only
+router.put(
+  "/update-status/:id",
+  authMiddleware(["admin"]),
+  reviewController.updateReviewStatus
+);
+
+// Random active reviews
+router.get("/active-reviews", reviewController.getActiveReviews);
+
+// Admin: all reviews
+router.get(
+  "/all-reviews",
+  authMiddleware(["admin"]),
+  reviewController.getAllReviews
 );
 
 export const reviewRoutes = router;
