@@ -7,7 +7,7 @@ const router = Router();
 // User routes
 router.post(
   "/add-review",
-  authMiddleware(["user", "admin","staff"]),
+  authMiddleware(["user", "admin", "staff"]),
   reviewController.createReview
 );
 
