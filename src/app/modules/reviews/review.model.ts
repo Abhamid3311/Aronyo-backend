@@ -6,12 +6,10 @@ const reviewSchema = new Schema<IReview>(
     userId: {
       type: Schema.Types.ObjectId,
       ref: "User",
-      required: [true, "User reference is required"],
     },
     orderId: {
       type: Schema.Types.ObjectId,
       ref: "Order",
-      required: [true, "Order reference is required"],
     },
     rating: {
       type: Number,
@@ -21,6 +19,7 @@ const reviewSchema = new Schema<IReview>(
     },
     comment: {
       type: String,
+      required: [true, "Comment is required"],
       maxlength: 500,
       trim: true,
     },
@@ -31,8 +30,5 @@ const reviewSchema = new Schema<IReview>(
   },
   { timestamps: true }
 );
-
-// One review per user per order
-reviewSchema.index({ userId: 1, orderId: 1 }, { unique: true });
 
 export const Review = model<IReview>("Review", reviewSchema);

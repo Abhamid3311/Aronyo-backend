@@ -25,23 +25,6 @@ export const reviewController = {
     }
   },
 
-  async getSingleReview(req: Request, res: Response) {
-    try {
-      const reviewId = req.params.id;
-      const review = await reviewService.getSingleReview(reviewId);
-
-      if (!review) {
-        return res
-          .status(404)
-          .json({ success: false, message: "Review not found" });
-      }
-
-      res.status(200).json({ success: true, data: review });
-    } catch (error) {
-      sendErrorResponse(error, res);
-    }
-  },
-
   async getActiveReviews(req: Request, res: Response) {
     try {
       const reviews = await reviewService.getAllActiveReviews();
@@ -55,32 +38,6 @@ export const reviewController = {
     try {
       const reviews = await reviewService.getAllReviews();
       res.status(200).json({ success: true, data: reviews });
-    } catch (error) {
-      sendErrorResponse(error, res);
-    }
-  },
-
-  async updateReview(req: Request, res: Response) {
-    try {
-      const reviewId = req.params.id;
-      const updateData = req.body;
-
-      const updatedReview = await reviewService.updateReview(
-        reviewId,
-        updateData
-      );
-
-      if (!updatedReview) {
-        return res
-          .status(404)
-          .json({ success: false, message: "Review not found" });
-      }
-
-      res.status(200).json({
-        success: true,
-        data: updatedReview,
-        message: "Review updated successfully",
-      });
     } catch (error) {
       sendErrorResponse(error, res);
     }

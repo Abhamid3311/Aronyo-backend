@@ -9,23 +9,14 @@ class ReviewService {
     rating: number,
     comment: string
   ): Promise<IReview> {
-    const existingReview = await Review.findOne({ userId, orderId });
-
-    let review: IReview;
-
-    if (existingReview) {
-      existingReview.rating = rating;
-      existingReview.comment = comment ?? "";
-      review = await existingReview.save();
-    } else {
-      review = await new Review({
-        userId,
-        orderId,
-        rating,
-        comment,
-        isActive: true,
-      }).save();
-    }
+    // Directly create a new review
+    const review = await new Review({
+      userId,
+      orderId,
+      rating,
+      comment,
+      isActive: true,
+    }).save();
 
     // --- Update Order to mark as reviewed ---
     const order = await Order.findById(orderId);
@@ -37,40 +28,36 @@ class ReviewService {
     return review;
   }
 
-  async getSingleReview(reviewId: string) {
-    return Review.findById(reviewId)
-      .populate("userId", "name email")
-      .populate("orderId", "_id status createdAt");
-  }
-
-  /* async getAllActiveReviews(limit = 5) {
-    return Review.find({ isActive: true })
-      .populate("userId", "name")
-      .populate("orderId", "_id status createdAt")
-      .sort({ createdAt: -1 })
-      .limit(limit);
-  } */
-
   async getAllActiveReviews() {
     return Review.find({ isActive: true })
-      .populate("userId", "name")
-      .populate("orderId", "_id status createdAt")
+      .populate("userId", "name email image")
       .sort({ createdAt: -1 });
   }
 
   async getAllReviews() {
-    return Review.find().populate("userId", "name email");
-  }
-
-  async updateReview(reviewId: string, updateData: Partial<IReview>) {
-    return Review.findByIdAndUpdate(reviewId, updateData, {
-      new: true,
-      runValidators: true,
-    });
+    return Review.find().populate("userId", "name email image");
   }
 
   async deleteReview(reviewId: string) {
-    return Review.findByIdAndDelete(reviewId);
+    // Find the review first
+    const review = await Review.findById(reviewId);
+    if (!review) {
+      throw new Error("Review not found");
+    }
+
+    const orderId = review.orderId;
+
+    // Delete the review
+    await Review.findByIdAndDelete(reviewId);
+
+    // Update the order to mark it as not reviewed
+    const order = await Order.findById(orderId);
+    if (order) {
+      order.isReviewed = false; // mark as not reviewed
+      await order.save();
+    }
+
+    return { success: true, message: "Review deleted and order updated" };
   }
 
   async updateReviewStatus(reviewId: string, isActive: boolean) {

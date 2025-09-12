@@ -7,20 +7,8 @@ const router = Router();
 // User routes
 router.post(
   "/add-review",
-  authMiddleware(["user", "admin"]),
+  authMiddleware(["user", "admin","staff"]),
   reviewController.createReview
-);
-
-router.get(
-  "/view-review/:id",
-  authMiddleware(["user", "admin"]),
-  reviewController.getSingleReview
-);
-
-router.put(
-  "/edit-review/:id",
-  authMiddleware(["user", "admin"]),
-  reviewController.updateReview
 );
 
 router.delete(

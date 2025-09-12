@@ -39,6 +39,7 @@ export const OrderService = {
       .populate("orderItems.product")
       .populate("user", "name email");
   },
+  
   async updateOrderStatus(
     orderId: string,
     statusData: { orderStatus?: string; paymentStatus?: string }
