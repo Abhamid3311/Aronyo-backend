@@ -26,6 +26,7 @@ export interface IOrder extends Document {
   deliveryCharge: number;
   totalPayable: number;
   transactionId: string;
+  isReviewed?: boolean;
   createdAt: Date;
   updatedAt: Date;
 }

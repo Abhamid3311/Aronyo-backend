@@ -7,32 +7,32 @@ const router = Router();
 // User routes
 router.post(
   "/add-review",
-  authMiddleware(["user"]),
+  authMiddleware(["user", "admin"]),
   reviewController.createReview
 );
 
 router.get(
   "/view-review/:id",
-  authMiddleware(["user"]),
+  authMiddleware(["user", "admin"]),
   reviewController.getSingleReview
 );
 
 router.put(
   "/edit-review/:id",
-  authMiddleware(["user"]),
+  authMiddleware(["user", "admin"]),
   reviewController.updateReview
 );
 
 router.delete(
   "/delete-review/:id",
-  authMiddleware(["user"]),
+  authMiddleware(["user", "admin"]),
   reviewController.deleteReview
 );
 
 // Admin only
 router.put(
   "/update-status/:id",
-  authMiddleware(["admin"]),
+  authMiddleware(["admin", "staff"]),
   reviewController.updateReviewStatus
 );
 

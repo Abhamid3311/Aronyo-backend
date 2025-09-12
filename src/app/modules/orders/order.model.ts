@@ -41,6 +41,7 @@ const orderSchema = new Schema<IOrder>(
     totalPayable: { type: Number, required: true },
 
     transactionId: { type: String, unique: true },
+    isReviewed: { type: Boolean, default: false },
   },
   { timestamps: true }
 );

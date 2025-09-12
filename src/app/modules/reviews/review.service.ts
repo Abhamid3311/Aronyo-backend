@@ -1,3 +1,4 @@
+import { Order } from "../orders/order.model";
 import { IReview } from "./review.interface";
 import { Review } from "./review.model";
 
@@ -10,20 +11,30 @@ class ReviewService {
   ): Promise<IReview> {
     const existingReview = await Review.findOne({ userId, orderId });
 
+    let review: IReview;
+
     if (existingReview) {
       existingReview.rating = rating;
       existingReview.comment = comment ?? "";
-      return await existingReview.save();
+      review = await existingReview.save();
+    } else {
+      review = await new Review({
+        userId,
+        orderId,
+        rating,
+        comment,
+        isActive: true,
+      }).save();
     }
 
-    const review = new Review({
-      userId,
-      orderId,
-      rating,
-      comment,
-      isActive: true,
-    });
-    return await review.save();
+    // --- Update Order to mark as reviewed ---
+    const order = await Order.findById(orderId);
+    if (order) {
+      order.isReviewed = true; // add new property if not exists or update
+      await order.save();
+    }
+
+    return review;
   }
 
   async getSingleReview(reviewId: string) {
@@ -48,9 +59,7 @@ class ReviewService {
   }
 
   async getAllReviews() {
-    return Review.find()
-      .populate("userId", "name email")
-      .populate("orderId", "_id status createdAt");
+    return Review.find().populate("userId", "name email");
   }
 
   async updateReview(reviewId: string, updateData: Partial<IReview>) {
