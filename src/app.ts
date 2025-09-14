@@ -13,29 +13,17 @@ import { blogRoutes } from "./app/modules/blog/blog.route";
 
 const app: Application = express();
 
-app.use(
-  cors({
-    origin: [
-      "http://localhost:3000",
-      "https://sandbox.sslcommerz.com",
-      "https://aronyo.vercel.app",
-    ],
-    credentials: true,
-  })
-);
+const corsOptions = {
+  origin: [
+    "http://localhost:3000",
+    "https://sandbox.sslcommerz.com",
+    "https://aronyo.vercel.app",
+  ],
+  credentials: true,
+};
 
-// Preflight requests
-app.options(
-  "*",
-  cors({
-    origin: [
-      "http://localhost:3000",
-      "https://sandbox.sslcommerz.com",
-      "https://aronyo.vercel.app",
-    ],
-    credentials: true,
-  })
-);
+app.use(cors(corsOptions));
+app.options("*", cors(corsOptions));
 
 //parser
 app.use(express.json());
