@@ -13,7 +13,7 @@ import { blogRoutes } from "./app/modules/blog/blog.route";
 
 const app: Application = express();
 
-const corsOptions = {
+/* const corsOptions = {
   origin: [
     "http://localhost:3000",
     "https://sandbox.sslcommerz.com",
@@ -23,7 +23,7 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
-app.options("*", cors(corsOptions));
+app.options("*", cors(corsOptions)); */
 
 //parser
 app.use(express.json());
