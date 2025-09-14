@@ -21,7 +21,6 @@ app.use(
     origin: [
       "http://localhost:3000",
       "https://sandbox.sslcommerz.com",
-      "https://aronyo-backend.vercel.app",
       "https://aronyo.vercel.app",
     ],
     credentials: true,
