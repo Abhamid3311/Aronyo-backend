@@ -30,7 +30,7 @@ class ProductController {
     }
   }
 
-  //  NEW: Get filter options for frontend dropdowns
+  //  Get filter options for frontend dropdowns
   async getFilterOptions(req: Request, res: Response) {
     try {
       const filters = await productService.getFilterOptions();
