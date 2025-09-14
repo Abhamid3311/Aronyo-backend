@@ -10,6 +10,7 @@ class ProductController {
             const userPayload = req.user;
             if (!userPayload) {
                 res.status(401).json({ success: false, message: "Unauthorized" });
+                return;
             }
             // Set createdBy from token's userId
             productData.createdBy = userPayload.userId;
@@ -24,6 +25,20 @@ class ProductController {
             (0, sendErrorResponse_1.sendErrorResponse)(error, res);
         }
     }
+    //  Get filter options for frontend dropdowns
+    async getFilterOptions(req, res) {
+        try {
+            const filters = await product_service_1.productService.getFilterOptions();
+            res.status(200).json({
+                success: true,
+                data: filters,
+                message: "Filter options fetched successfully",
+            });
+        }
+        catch (error) {
+            (0, sendErrorResponse_1.sendErrorResponse)(error, res);
+        }
+    }
     async getProducts(req, res) {
         try {
             const queryParams = req.query;
@@ -31,30 +46,61 @@ class ProductController {
             const limit = parseInt(queryParams.limit || "12");
             const skip = (page - 1) * limit;
             const filter = {};
-            // Search functionality
-            if (queryParams.search) {
-                filter.$or = [
-                    { title: { $regex: queryParams.search, $options: "i" } },
-                    { description: { $regex: queryParams.search, $options: "i" } },
-                    { brand: { $regex: queryParams.search, $options: "i" } },
-                ];
+            const andConditions = [];
+            // Search - FIXED: Use $or instead of $and
+            if (queryParams.search && queryParams.search.trim()) {
+                andConditions.push({
+                    $or: [
+                        { title: { $regex: queryParams.search.trim(), $options: "i" } },
+                        {
+                            description: { $regex: queryParams.search.trim(), $options: "i" },
+                        },
+                        { brand: { $regex: queryParams.search.trim(), $options: "i" } },
+                        { category: { $regex: queryParams.search.trim(), $options: "i" } },
+                    ],
+                });
             }
-            // Filter by category
-            if (queryParams.category) {
-                filter.category = queryParams.category;
+            //  Multi-size filter - FIXED: Use 'size' (singular) not 'sizes'
+            if (queryParams.size && queryParams.size.trim()) {
+                const sizes = Array.isArray(queryParams.size)
+                    ? queryParams.size
+                    : queryParams.size
+                        .split(",")
+                        .map((s) => s.trim())
+                        .filter(Boolean);
+                if (sizes.length > 0) {
+                    filter.size = { $in: sizes };
+                }
             }
-            // Filter by brand
-            if (queryParams.brand) {
-                filter.brand = { $regex: queryParams.brand, $options: "i" };
+            // Category
+            if (queryParams.category && queryParams.category.trim()) {
+                filter.category = queryParams.category.trim();
             }
-            // ✅ Filter by tag (support multiple tags)
-            if (queryParams.tag) {
-                const tags = Array.isArray(queryParams.tag)
-                    ? queryParams.tag
-                    : queryParams.tag.split(","); // support comma-separated tags
-                filter.tags = { $in: tags };
+            //  Multi-brand filter
+            if (queryParams.brand && queryParams.brand.trim()) {
+                const brands = Array.isArray(queryParams.brand)
+                    ? queryParams.brand
+                    : queryParams.brand
+                        .split(",")
+                        .map((b) => b.trim())
+                        .filter(Boolean);
+                if (brands.length > 0) {
+                    filter.brand = { $in: brands.map((b) => new RegExp(b, "i")) };
+                }
             }
-            // Price range filter
+            // Multi-tag filter
+            if (queryParams.tags && queryParams.tags.trim()) {
+                const tags = Array.isArray(queryParams.tags)
+                    ? queryParams.tags
+                    : queryParams.tags
+                        .split(",")
+                        .map((t) => t.trim())
+                        .filter(Boolean);
+                if (tags.length > 0) {
+                    filter.tags = { $in: tags };
+                }
+            }
+            // Price range
             if (queryParams.minPrice || queryParams.maxPrice) {
                 filter.price = {};
                 if (queryParams.minPrice) {
@@ -64,8 +110,13 @@ class ProductController {
                     filter.price.$lte = parseFloat(queryParams.maxPrice);
                 }
             }
-            // Sorting
+            // Combine search with other filters
+            if (andConditions.length > 0) {
+                filter.$and = andConditions;
+            }
+            //  Sorting
             const sort = queryParams.sort || "-createdAt";
+            //  Query DB
             const [products, total] = await Promise.all([
                 product_service_1.productService.getProducts(filter, skip, limit, sort),
                 product_service_1.productService.countProducts(filter),
@@ -82,6 +133,7 @@ class ProductController {
             });
         }
         catch (error) {
+            console.error(" Error in getProducts:", error);
             (0, sendErrorResponse_1.sendErrorResponse)(error, res);
         }
     }
@@ -102,6 +154,7 @@ class ProductController {
                     success: false,
                     message: "Product not found",
                 });
+                return;
             }
             res.status(200).json({
                 success: true,
@@ -120,6 +173,7 @@ class ProductController {
                     success: false,
                     message: "Product not found",
                 });
+                return;
             }
             res.status(200).json({
                 success: true,
@@ -138,6 +192,7 @@ class ProductController {
                     success: false,
                     message: "Product not found",
                 });
+                return;
             }
             res.status(200).json({
                 success: true,
@@ -157,6 +212,7 @@ class ProductController {
                     success: false,
                     message: "Product not found",
                 });
+                return;
             }
             res.status(200).json({
                 success: true,

@@ -2,51 +2,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.OrderService = void 0;
 const order_model_1 = require("./order.model");
-const product_model_1 = require("../products/product.model");
-const uuid_1 = require("uuid");
-const cart_service_1 = require("../cart/cart.service");
 exports.OrderService = {
-    async createOrder(userId, orderData) {
-        // 1️⃣ Get cart
-        const cart = await cart_service_1.CartService.getCart(userId);
-        if (!cart || !cart.items.length) {
-            throw new Error("Cart is empty");
-        }
-        // 2️⃣ Build order items
-        const orderItems = await Promise.all(cart.items.map(async (item) => {
-            const product = await product_model_1.Product.findById(item.productId);
-            if (!product)
-                throw new Error(`Product not found`);
-            if (product.stock < item.quantity) {
-                throw new Error(`Insufficient stock for ${product.title}`);
-            }
-            return {
-                product: item.productId,
-                quantity: item.quantity,
-                price: product.price,
-            };
-        }));
-        // 3️⃣ Totals
-        const totalAmount = orderItems.reduce((sum, i) => sum + i.quantity * i.price, 0);
-        const deliveryCharge = orderData.deliveryCharge || 0;
-        const totalPayable = totalAmount + deliveryCharge;
-        // 4️⃣ Transaction ID
-        const transactionId = "TXN-" + Date.now() + "-" + (0, uuid_1.v4)().slice(0, 8);
-        // 5️⃣ Save order
-        const order = await order_model_1.Order.create({
-            user: userId,
-            orderItems,
-            shippingAddress: orderData.shippingAddress,
-            paymentMethod: orderData.paymentMethod, // 🔥 either cod or online
-            paymentStatus: "pending",
-            orderStatus: "pending",
-            totalAmount,
-            deliveryCharge,
-            totalPayable,
-            transactionId,
-        });
-        // 6️⃣ Clear cart
-        await cart_service_1.CartService.clearCart(userId);
+    async createOrder(orderData) {
+        const order = await order_model_1.Order.create(orderData);
         return order;
     },
     async getAllOrders(userId) {
@@ -70,8 +28,8 @@ exports.OrderService = {
         ]);
         return { orders, total };
     },
-    async getSingleOrder(orderId, userId) {
-        return await order_model_1.Order.findOne({ _id: orderId, user: userId })
+    async getSingleOrder(orderId) {
+        return await order_model_1.Order.findById(orderId)
             .populate("orderItems.product")
             .populate("user", "name email");
     },

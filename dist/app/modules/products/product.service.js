@@ -7,6 +7,20 @@ class ProductService {
         const product = new product_model_1.Product(productData);
         return await product.save();
     }
+    async getFilterOptions() {
+        const brands = await product_model_1.Product.distinct("brand");
+        const categories = await product_model_1.Product.distinct("category");
+        const tags = await product_model_1.Product.distinct("tags");
+        // FIXED: Use 'size' (singular) instead of 'sizes' (plural)
+        const sizes = await product_model_1.Product.distinct("size");
+        return {
+            brands: brands.filter(Boolean),
+            categories: categories.filter(Boolean),
+            tags: tags.filter(Boolean),
+            sizes: sizes.filter(Boolean),
+        };
+    }
+    // New Added
     async getProducts(filter, skip, limit, sort) {
         // Merge filter with default user filter
         const userFilter = {
@@ -15,15 +29,18 @@ class ProductService {
         };
         return await product_model_1.Product.find(userFilter).skip(skip).limit(limit).sort(sort);
     }
+    async countProducts(filter) {
+        const userFilter = {
+            ...filter,
+            $or: [{ isActive: true }, { isActive: { $exists: false } }],
+        };
+        return await product_model_1.Product.countDocuments(userFilter);
+    }
     async getAllProductsForAdmin() {
         return await product_model_1.Product.find({}).sort({ createdAt: -1 });
     }
-    async countProducts(filter) {
-        return await product_model_1.Product.countDocuments(filter);
-    }
     async getProductById(id) {
         return await product_model_1.Product.findById(id).populate("createdBy", "name email");
-        // return await Product.findById(id);
     }
     async getProductBySlug(slug) {
         const product = await product_model_1.Product.findOne({ slug }).lean();

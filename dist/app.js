@@ -17,10 +17,10 @@ const wishlist_route_1 = require("./app/modules/wishlist/wishlist.route");
 const blog_route_1 = require("./app/modules/blog/blog.route");
 const app = (0, express_1.default)();
 //parser
-app.use(express_1.default.urlencoded({ extended: true }));
 app.use(express_1.default.json());
+app.use(express_1.default.urlencoded({ extended: true }));
 app.use((0, cors_1.default)({
-    origin: ["http://localhost:3000"],
+    origin: ["http://localhost:3000", "https://sandbox.sslcommerz.com"],
     credentials: true,
 }));
 app.use((0, cookie_parser_1.default)());

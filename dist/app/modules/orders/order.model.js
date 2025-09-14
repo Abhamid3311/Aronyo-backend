@@ -35,5 +35,6 @@ const orderSchema = new mongoose_1.Schema({
     deliveryCharge: { type: Number, required: true },
     totalPayable: { type: Number, required: true },
     transactionId: { type: String, unique: true },
+    isReviewed: { type: Boolean, default: false },
 }, { timestamps: true });
 exports.Order = (0, mongoose_1.model)("Order", orderSchema);
