@@ -82,7 +82,7 @@ export const authController = {
 
 // Helper: set both refresh & access tokens on login/register
 const setAuthCookies = (res: Response, result: any) => {
-  // Refresh token - long-lived
+  // Refresh token
   res.cookie("refreshToken", result.refreshToken, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
@@ -90,7 +90,7 @@ const setAuthCookies = (res: Response, result: any) => {
     maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
   });
 
-  // Access token - short-lived
+  // Access token
   res.cookie("accessToken", result.accessToken, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",

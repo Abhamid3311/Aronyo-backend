@@ -1,5 +1,5 @@
 import express, { Application, Request, Response } from "express";
-// import cors from "cors";
+import cors from "cors";
 import cookieParser from "cookie-parser";
 import { authRoutes } from "./app/modules/auth/auth.route";
 import { userRoutes } from "./app/modules/user/user.route";
@@ -13,17 +13,16 @@ import { blogRoutes } from "./app/modules/blog/blog.route";
 
 const app: Application = express();
 
-/* const corsOptions = {
+const corsOptions = {
   origin: [
+    "https://aronyo.vercel.app",
     "http://localhost:3000",
     "https://sandbox.sslcommerz.com",
-    "https://aronyo.vercel.app",
   ],
   credentials: true,
 };
 
 app.use(cors(corsOptions));
-app.options("*", cors(corsOptions)); */
 
 //parser
 app.use(express.json());
