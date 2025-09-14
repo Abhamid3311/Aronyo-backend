@@ -18,7 +18,11 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(
   cors({
-    origin: ["http://localhost:3000", "https://sandbox.sslcommerz.com"],
+    origin: [
+      "http://localhost:3000",
+      "https://sandbox.sslcommerz.com",
+      "https://aronyo-backend.vercel.app",
+    ],
     credentials: true,
   })
 );
