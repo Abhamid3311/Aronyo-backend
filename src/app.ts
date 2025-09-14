@@ -13,9 +13,6 @@ import { blogRoutes } from "./app/modules/blog/blog.route";
 
 const app: Application = express();
 
-//parser
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 app.use(
   cors({
     origin: [
@@ -26,6 +23,23 @@ app.use(
     credentials: true,
   })
 );
+
+// Preflight requests
+app.options(
+  "*",
+  cors({
+    origin: [
+      "http://localhost:3000",
+      "https://sandbox.sslcommerz.com",
+      "https://aronyo.vercel.app",
+    ],
+    credentials: true,
+  })
+);
+
+//parser
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 //Application routes
