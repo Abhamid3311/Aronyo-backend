@@ -9,6 +9,8 @@ export const authController = {
       const userData = req.body;
       const result = await authService.register(userData);
 
+      console.log(result);
+
       setAuthCookies(res, result);
 
       res.status(201).json({
