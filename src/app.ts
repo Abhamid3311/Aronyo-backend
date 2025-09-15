@@ -13,6 +13,36 @@ import { blogRoutes } from "./app/modules/blog/blog.route";
 
 const app: Application = express();
 
+// Explicit CORS headers (helps on some platforms where preflight may skip middleware)
+const allowedOrigins = [
+  "https://aronyo.vercel.app",
+  "http://localhost:3000",
+  "https://sandbox.sslcommerz.com",
+];
+
+app.use((req: Request, res: Response, next) => {
+  const origin = req.headers.origin as string | undefined;
+  if (origin && allowedOrigins.includes(origin)) {
+    res.header("Access-Control-Allow-Origin", origin);
+  }
+  res.header("Vary", "Origin");
+  res.header("Access-Control-Allow-Credentials", "true");
+  res.header(
+    "Access-Control-Allow-Methods",
+    "GET,POST,PUT,PATCH,DELETE,OPTIONS"
+  );
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Content-Type, Authorization, X-Requested-With, Accept, Origin"
+  );
+
+  if (req.method === "OPTIONS") {
+    // Short-circuit preflight
+    return res.sendStatus(204);
+  }
+  next();
+});
+
 const corsOptions: CorsOptions = {
   origin: [
     "https://aronyo.vercel.app",
