@@ -12,8 +12,6 @@ import { blogRoutes } from "./app/modules/blog/blog.route";
 
 const app: Application = express();
 
-// CORS handled at Vercel edge via vercel.json
-
 //parser
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
