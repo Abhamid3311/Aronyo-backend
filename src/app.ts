@@ -1,5 +1,4 @@
 import express, { Application, Request, Response } from "express";
-import cors, { CorsOptions } from "cors";
 import cookieParser from "cookie-parser";
 import { authRoutes } from "./app/modules/auth/auth.route";
 import { userRoutes } from "./app/modules/user/user.route";
@@ -13,65 +12,7 @@ import { blogRoutes } from "./app/modules/blog/blog.route";
 
 const app: Application = express();
 
-// Explicit CORS headers (helps on some platforms where preflight may skip middleware)
-const allowedOrigins = [
-  "https://aronyo.vercel.app",
-  "http://localhost:3000",
-  "https://sandbox.sslcommerz.com",
-];
-
-app.use((req: Request, res: Response, next) => {
-  const origin = req.headers.origin as string | undefined;
-  const isAllowedOrigin = Boolean(origin && allowedOrigins.includes(origin));
-
-  if (isAllowedOrigin && origin) {
-    res.header("Access-Control-Allow-Origin", origin);
-  }
-  res.header("Vary", "Origin");
-  res.header("Access-Control-Allow-Credentials", "true");
-  res.header(
-    "Access-Control-Allow-Methods",
-    "GET,POST,PUT,PATCH,DELETE,OPTIONS"
-  );
-
-  const requestedHeaders = (req.headers[
-    "access-control-request-headers"
-  ] || "") as string;
-  const defaultAllowedHeaders =
-    "Content-Type, Authorization, X-Requested-With, Accept, Origin";
-  res.header(
-    "Access-Control-Allow-Headers",
-    requestedHeaders ? requestedHeaders : defaultAllowedHeaders
-  );
-  res.header("Access-Control-Max-Age", "600");
-
-  if (req.method === "OPTIONS") {
-    // Only short-circuit if origin is allowed; otherwise let downstream handle
-    return isAllowedOrigin ? res.sendStatus(204) : next();
-  }
-  next();
-});
-
-const corsOptions: CorsOptions = {
-  origin: [
-    "https://aronyo.vercel.app",
-    "http://localhost:3000",
-    "https://sandbox.sslcommerz.com",
-  ],
-  credentials: true,
-  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-  allowedHeaders: [
-    "Content-Type",
-    "Authorization",
-    "X-Requested-With",
-    "Accept",
-    "Origin",
-  ],
-  optionsSuccessStatus: 204,
-  preflightContinue: false,
-};
-
-app.use(cors(corsOptions));
+// CORS handled at Vercel edge via vercel.json
 
 //parser
 app.use(express.json());
