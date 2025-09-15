@@ -22,7 +22,9 @@ const allowedOrigins = [
 
 app.use((req: Request, res: Response, next) => {
   const origin = req.headers.origin as string | undefined;
-  if (origin && allowedOrigins.includes(origin)) {
+  const isAllowedOrigin = Boolean(origin && allowedOrigins.includes(origin));
+
+  if (isAllowedOrigin && origin) {
     res.header("Access-Control-Allow-Origin", origin);
   }
   res.header("Vary", "Origin");
@@ -31,14 +33,21 @@ app.use((req: Request, res: Response, next) => {
     "Access-Control-Allow-Methods",
     "GET,POST,PUT,PATCH,DELETE,OPTIONS"
   );
+
+  const requestedHeaders = (req.headers[
+    "access-control-request-headers"
+  ] || "") as string;
+  const defaultAllowedHeaders =
+    "Content-Type, Authorization, X-Requested-With, Accept, Origin";
   res.header(
     "Access-Control-Allow-Headers",
-    "Content-Type, Authorization, X-Requested-With, Accept, Origin"
+    requestedHeaders ? requestedHeaders : defaultAllowedHeaders
   );
+  res.header("Access-Control-Max-Age", "600");
 
   if (req.method === "OPTIONS") {
-    // Short-circuit preflight
-    return res.sendStatus(204);
+    // Only short-circuit if origin is allowed; otherwise let downstream handle
+    return isAllowedOrigin ? res.sendStatus(204) : next();
   }
   next();
 });
