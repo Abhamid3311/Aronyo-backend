@@ -23,6 +23,8 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
+// Respond to CORS preflight requests explicitly
+app.options("*", cors(corsOptions));
 
 //parser
 app.use(express.json());
