@@ -42,8 +42,18 @@ export const authController = {
   async logout(req: Request, res: Response) {
     try {
       // Clear both access and refresh tokens
-      res.clearCookie("accessToken");
-      res.clearCookie("refreshToken");
+      res.clearCookie("accessToken", {
+        httpOnly: true,
+        sameSite: "none",
+        secure: true,
+        path: "/",
+      });
+      res.clearCookie("refreshToken", {
+        httpOnly: true,
+        sameSite: "none",
+        secure: true,
+        path: "/",
+      });
 
       res
         .status(200)
