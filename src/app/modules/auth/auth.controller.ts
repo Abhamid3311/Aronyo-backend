@@ -93,12 +93,14 @@ export const authController = {
 };
 
 // Helper: set both refresh & access tokens on login/register
+
 const setAuthCookies = (res: Response, result: any) => {
   // Refresh token
   res.cookie("refreshToken", result.refreshToken, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    sameSite: "lax",
+    // sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
     maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
   });
 
@@ -106,7 +108,8 @@ const setAuthCookies = (res: Response, result: any) => {
   res.cookie("accessToken", result.accessToken, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    sameSite: "lax",
+    // sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
     maxAge: 15 * 60 * 1000, // 15 minutes
   });
 };
