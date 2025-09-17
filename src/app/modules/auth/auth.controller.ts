@@ -8,9 +8,6 @@ export const authController = {
     try {
       const userData = req.body;
       const result = await authService.register(userData);
-
-      console.log(result);
-
       setAuthCookies(res, result);
 
       res.status(201).json({
@@ -27,6 +24,8 @@ export const authController = {
     try {
       const { email, password } = req.body;
       const result = await authService.login(email, password);
+
+      console.log("result", result);
 
       setAuthCookies(res, result);
 
@@ -49,6 +48,13 @@ export const authController = {
         path: "/",
       });
       res.clearCookie("refreshToken", {
+        httpOnly: true,
+        sameSite: "none",
+        secure: true,
+        path: "/",
+      });
+
+      res.clearCookie("aronyo_role", {
         httpOnly: true,
         sameSite: "none",
         secure: true,
@@ -109,5 +115,13 @@ const setAuthCookies = (res: Response, result: any) => {
     secure: process.env.NODE_ENV === "production",
     sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
     maxAge: 15 * 60 * 1000, // 15 minutes
+  });
+
+  // Access Role
+  res.cookie("aronyo_role", result.user.role, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
   });
 };
