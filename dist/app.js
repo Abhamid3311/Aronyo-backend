@@ -16,13 +16,17 @@ const order_route_1 = require("./app/modules/orders/order.route");
 const wishlist_route_1 = require("./app/modules/wishlist/wishlist.route");
 const blog_route_1 = require("./app/modules/blog/blog.route");
 const app = (0, express_1.default)();
+app.use((0, cors_1.default)({
+    origin: [
+        "http://localhost:3000",
+        "https://aronyo.vercel.app",
+        "https://sandbox.sslcommerz.com",
+    ],
+    credentials: true,
+}));
 //parser
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: true }));
-app.use((0, cors_1.default)({
-    origin: ["http://localhost:3000", "https://sandbox.sslcommerz.com"],
-    credentials: true,
-}));
 app.use((0, cookie_parser_1.default)());
 //Application routes
 app.use("/api/v1/auth", auth_route_1.authRoutes);

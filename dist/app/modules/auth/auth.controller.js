@@ -23,6 +23,7 @@ exports.authController = {
         try {
             const { email, password } = req.body;
             const result = await auth_service_1.authService.login(email, password);
+            console.log("result", result);
             setAuthCookies(res, result);
             res.status(200).json({
                 success: true,
@@ -36,8 +37,24 @@ exports.authController = {
     async logout(req, res) {
         try {
             // Clear both access and refresh tokens
-            res.clearCookie("accessToken");
-            res.clearCookie("refreshToken");
+            res.clearCookie("accessToken", {
+                httpOnly: true,
+                sameSite: "none",
+                secure: true,
+                path: "/",
+            });
+            res.clearCookie("refreshToken", {
+                httpOnly: true,
+                sameSite: "none",
+                secure: true,
+                path: "/",
+            });
+            res.clearCookie("aronyo_role", {
+                httpOnly: true,
+                sameSite: "none",
+                secure: true,
+                path: "/",
+            });
             res
                 .status(200)
                 .json({ success: true, message: "Logged out successfully" });
@@ -74,18 +91,26 @@ exports.authController = {
 };
 // Helper: set both refresh & access tokens on login/register
 const setAuthCookies = (res, result) => {
-    // Refresh token - long-lived
+    // Refresh token
     res.cookie("refreshToken", result.refreshToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
         maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
-    // Access token - short-lived
+    // Access token
     res.cookie("accessToken", result.accessToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
         maxAge: 15 * 60 * 1000, // 15 minutes
+    });
+    // Access Role
+    res.cookie("aronyo_role", result.user.role, {
+        httpOnly: true,
+        // domain: process.env.NODE_ENV === "production" ? ".vercel.app" : "/",
+        secure: process.env.NODE_ENV === "production",
+        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
 };
