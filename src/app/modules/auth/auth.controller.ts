@@ -120,7 +120,6 @@ const setAuthCookies = (res: Response, result: any) => {
   // Access Role
   res.cookie("aronyo_role", result.user.role, {
     httpOnly: true,
-    domain: ".vercel.app",
     secure: process.env.NODE_ENV === "production",
     sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
     maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
