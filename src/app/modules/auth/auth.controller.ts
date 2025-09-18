@@ -27,11 +27,22 @@ export const authController = {
 
       console.log("result", result);
 
-      setAuthCookies(res, result);
+      // setAuthCookies(res, result);
+
+      res.cookie("refreshToken", result.refreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "none",
+        maxAge: 7 * 24 * 60 * 60 * 1000 * 30, // 30 days
+      });
 
       res.status(200).json({
         success: true,
-        data: { user: result.user }, // frontend relies on cookies now
+        data: {
+          // user: result.user,
+          accessToken: result.accessToken,
+          refreshToken: result.refreshToken,
+        },
       });
     } catch (error) {
       sendErrorResponse(error, res);
@@ -54,12 +65,12 @@ export const authController = {
         path: "/",
       });
 
-      res.clearCookie("aronyo_role", {
+      /*  res.clearCookie("aronyo_role", {
         httpOnly: true,
         sameSite: "none",
         secure: true,
         path: "/",
-      });
+      }); */
 
       res
         .status(200)
@@ -106,7 +117,7 @@ const setAuthCookies = (res: Response, result: any) => {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    maxAge: 7 * 24 * 60 * 60 * 1000 * 30, // 30 days
   });
 
   // Access token
@@ -118,10 +129,10 @@ const setAuthCookies = (res: Response, result: any) => {
   });
 
   // Access Role
-  res.cookie("aronyo_role", result.user.role, {
+  /* res.cookie("aronyo_role", result.user.role, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
     maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-  });
+  }); */
 };
