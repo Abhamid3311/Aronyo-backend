@@ -103,14 +103,18 @@ const setAuthCookies = (res: Response, result: any) => {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    domain:
+      process.env.NODE_ENV === "production" ? "aronyo.vercel.app" : undefined,
     maxAge: 7 * 24 * 60 * 60 * 1000 * 30, // 30 days
   });
 
   // Access token
-   res.cookie("accessToken", result.accessToken, {
+  res.cookie("accessToken", result.accessToken, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    domain:
+      process.env.NODE_ENV === "production" ? "aronyo.vercel.app" : undefined,
     maxAge: 15 * 60 * 1000, // 15 minutes
   });
 };
