@@ -15,11 +15,20 @@ const app: Application = express();
 
 app.use(
   cors({
-    origin: [
-      "http://localhost:3000",
-      "https://aronyo.vercel.app",
-      "https://sandbox.sslcommerz.com",
-    ],
+    origin: (origin, callback) => {
+      const allowedOrigins = [
+        "http://localhost:3000",
+        "https://aronyo.vercel.app",
+        "https://sandbox.sslcommerz.com",
+      ];
+
+      // Allow requests with no origin (like mobile apps, curl, Postman)
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true,
   })
 );
