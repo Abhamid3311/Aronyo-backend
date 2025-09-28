@@ -24,6 +24,8 @@ app.use(
   })
 );
 
+// Package JSON: // "build": "npm install && tsc --skipLibCheck",
+
 //parser
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
