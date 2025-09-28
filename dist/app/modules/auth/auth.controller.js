@@ -23,11 +23,15 @@ exports.authController = {
         try {
             const { email, password } = req.body;
             const result = await auth_service_1.authService.login(email, password);
-            console.log("result", result);
+            // console.log("result", result);
             setAuthCookies(res, result);
             res.status(200).json({
                 success: true,
-                data: { user: result.user }, // frontend relies on cookies now
+                data: {
+                    user: result.user,
+                    accessToken: result.accessToken,
+                    refreshToken: result.refreshToken,
+                },
             });
         }
         catch (error) {
@@ -44,12 +48,6 @@ exports.authController = {
                 path: "/",
             });
             res.clearCookie("refreshToken", {
-                httpOnly: true,
-                sameSite: "none",
-                secure: true,
-                path: "/",
-            });
-            res.clearCookie("aronyo_role", {
                 httpOnly: true,
                 sameSite: "none",
                 secure: true,
@@ -96,7 +94,7 @@ const setAuthCookies = (res, result) => {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+        maxAge: 7 * 24 * 60 * 60 * 1000 * 30, // 30 days
     });
     // Access token
     res.cookie("accessToken", result.accessToken, {
@@ -104,13 +102,5 @@ const setAuthCookies = (res, result) => {
         secure: process.env.NODE_ENV === "production",
         sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
         maxAge: 15 * 60 * 1000, // 15 minutes
-    });
-    // Access Role
-    res.cookie("aronyo_role", result.user.role, {
-        httpOnly: true,
-        // domain: process.env.NODE_ENV === "production" ? ".vercel.app" : "/",
-        secure: process.env.NODE_ENV === "production",
-        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
 };
